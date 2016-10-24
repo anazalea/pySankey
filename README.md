@@ -4,4 +4,4 @@ Uses matplotlib to create the kind of <a href="https://en.wikipedia.org/wiki/San
 
 Requires seaborn, pandas, numPy, matplotlib because I said so.
 
-![Fruity Alchemy](http://github.com/anazalea/pySankey/blob/master/fruit.png)
+![Fruity Alchemy](https://github.com/anazalea/pySankey/blob/master/fruit.png)
