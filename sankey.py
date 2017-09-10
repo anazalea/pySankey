@@ -39,7 +39,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from collections import defaultdict
+from collections import defaultdict, Counter
 plt.rc('text',usetex=False)
 plt.rc('font',family='serif')
 import seaborn as sns;
@@ -47,7 +47,7 @@ sns.set_style("white",{'font.family':[u'serif']})
 
 
         
-def sankey(before,after,colorDict={},aspect=4,rightColor=False):
+def sankey(before,after,colorDict={},aspect=4,rightColor=False,fontsize=14):
     '''
     Make Sankey Diagram showing flow from before-->after
     
@@ -66,7 +66,8 @@ def sankey(before,after,colorDict={},aspect=4,rightColor=False):
     df = pd.DataFrame({'before':before,'after':after},index=range(len(before)))
     
     # Identify all labels that appear 'before' or 'after'
-    allLabels = pd.Series(np.r_[df.before.unique(),df.after.unique()]).unique()
+    #allLabels = pd.Series(np.r_[np.array(Counter(before).most_common())[:,0],np.array(Counter(after).most_common())[:,0]]).unique()
+    allLabels = np.array(Counter(np.r_[before,after]).most_common())[:,0][::-1]
     
     # If no colorDict given, make one
     if colorDict == {}:
@@ -113,8 +114,8 @@ def sankey(before,after,colorDict={},aspect=4,rightColor=False):
         plt.fill_between([xMax,1.02*xMax],2*[widths[l]['rightBottom']],\
             2*[widths[l]['rightBottom']+widths[l]['right']],color=colorDict[l],alpha=0.99)
             
-        plt.text(-0.05*xMax,widths[l]['leftBottom']+0.5*widths[l]['left'],l,{'ha': 'right', 'va': 'center'})
-        plt.text(1.05*xMax,widths[l]['rightBottom']+0.5*widths[l]['right'],l,{'ha': 'left', 'va': 'center'})
+        plt.text(-0.05*xMax,widths[l]['leftBottom']+0.5*widths[l]['left'],l,{'ha': 'right', 'va': 'center'},fontsize=fontsize)
+        plt.text(1.05*xMax,widths[l]['rightBottom']+0.5*widths[l]['right'],l,{'ha': 'left', 'va': 'center'},fontsize=fontsize)
         
     # Plot strips
     for l in allLabels:
