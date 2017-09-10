@@ -4,7 +4,7 @@ Uses matplotlib to create the kind of <a href="https://en.wikipedia.org/wiki/San
 
 Requires seaborn, pandas, numPy, matplotlib.
 
-![Fruity Alchemy](https://github.com/anazalea/pySankey/blob/master/fruit.png)
+![Fruity Alchemy](https://github.com/anazalea/pySankey/blob/master/fruits.png)
 
 ```python
 import sankey
@@ -103,4 +103,4 @@ plt.savefig('fruit.png',bbox_inches='tight',dpi=150)
 ```
 
 
-![png](fruit.png)
+![Fruity Alchemy](https://github.com/anazalea/pySankey/blob/master/fruits.png)
