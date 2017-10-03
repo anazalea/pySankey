@@ -31,13 +31,9 @@ import pandas as pd
 import seaborn as sns
 
 
-plt.rc('text', usetex=False)
-plt.rc('font', family='serif')
-
-
 def sankey_weighted(left, right, leftWeight=None, rightWeight=None,
-                    colorDict=None, leftLabels=None, rightLabels=None,
-                    aspect=4, rightColor=False, fontsize=20):
+           colorDict=None, leftLabels=None, rightLabels=None,
+           aspect=4, rightColor=False, fontsize=14):
     '''
     Make Sankey Diagram showing flow from left-->right
 
@@ -74,6 +70,10 @@ def sankey_weighted(left, right, leftWeight=None, rightWeight=None,
 
     if len(rightWeight) == 0:
         rightWeight = leftWeight
+
+    plt.figure()
+    plt.rc('text', usetex=False)
+    plt.rc('font', family='serif')
 
     # Create Dataframe
     df = pd.DataFrame({'left': left, 'right': right, 'leftWeight': leftWeight,

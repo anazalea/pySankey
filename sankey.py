@@ -25,10 +25,6 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-plt.rc('text', usetex=False)
-plt.rc('font', family='serif')
-sns.set_style("white", {'font.family': [u'serif']})
-
 
 def sankey(before, after, colorDict=None, aspect=4, rightColor=False,
            fontsize=14):
@@ -47,7 +43,10 @@ def sankey(before, after, colorDict=None, aspect=4, rightColor=False,
     Ouput:
         None
     '''
-
+    plt.figure()
+    plt.rc('text', usetex=False)
+    plt.rc('font', family='serif')
+    sns.set_style("white", {'font.family': [u'serif']})
     df = pd.DataFrame({'before': before, 'after': after},
                       index=range(len(before)))
 
