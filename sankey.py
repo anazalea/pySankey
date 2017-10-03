@@ -30,7 +30,7 @@ plt.rc('font', family='serif')
 sns.set_style("white", {'font.family': [u'serif']})
 
 
-def sankey(before, after, colorDict={}, aspect=4, rightColor=False,
+def sankey(before, after, colorDict=None, aspect=4, rightColor=False,
            fontsize=14):
     '''
     Make Sankey Diagram showing flow from before-->after
@@ -59,7 +59,8 @@ def sankey(before, after, colorDict={}, aspect=4, rightColor=False,
     allLabels = np.array(Counter(np.r_[before, after]).most_common())[:, 0][::-1]
 
     # If no colorDict given, make one
-    if colorDict == {}:
+    if colorDict is None:
+        colorDict = {}
         pal = "hls"
         cls = sns.color_palette(pal, len(allLabels))
         for i, l in enumerate(allLabels):

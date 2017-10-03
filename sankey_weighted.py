@@ -35,8 +35,9 @@ plt.rc('text', usetex=False)
 plt.rc('font', family='serif')
 
 
-def sankey_weighted(left, right, leftWeight=[], rightWeight=[], colorDict={},
-                    leftLabels=[], rightLabels=[], aspect=4, rightColor=False):
+def sankey_weighted(left, right, leftWeight=None, rightWeight=None,
+                    colorDict=None, leftLabels=None, rightLabels=None,
+                    aspect=4, rightColor=False):
     '''
     Make Sankey Diagram showing flow from left-->right
 
@@ -59,6 +60,14 @@ def sankey_weighted(left, right, leftWeight=[], rightWeight=[], colorDict={},
     Ouput:
         None
     '''
+    if leftWeight is None:
+        leftWeight = []
+    if rightWeight is None:
+        rightWeight = []
+    if leftLabels is None:
+        leftLabels = []
+    if rightLabels is None:
+        rightLabels = []
     # Check weights
     if len(leftWeight) == 0:
         leftWeight = np.ones(len(left))
@@ -82,7 +91,8 @@ def sankey_weighted(left, right, leftWeight=[], rightWeight=[], colorDict={},
         rightLabels = pd.Series(df.right.unique()).unique()
 
     # If no colorDict given, make one
-    if colorDict == {}:
+    if colorDict is None:
+        colorDict = {}
         pal = "hls"
         cls = sns.color_palette(pal, len(allLabels))
         for i, l in enumerate(allLabels):
