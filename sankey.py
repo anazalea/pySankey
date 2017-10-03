@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
-
 """
-Produces Sankey Diagrams with matplotlib
-
-@author: Anneya Golob
+Produces simple Sankey Diagrams with matplotlib.
+@author: Anneya Golob & marcomanz & pierre-sassoulas
                       .-.
                  .--.(   ).--.
       <-.  .-.-.(.->          )_  .--.
@@ -18,7 +16,7 @@ Produces Sankey Diagrams with matplotlib
                 '  |   '   |
 """
 
-from collections import defaultdict, Counter
+from collections import defaultdict
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -26,36 +24,64 @@ import pandas as pd
 import seaborn as sns
 
 
-def sankey(before, after, colorDict=None, aspect=4, rightColor=False,
+def sankey(left, right, leftWeight=None, rightWeight=None, colorDict=None,
+           leftLabels=None, rightLabels=None, aspect=4, rightColor=False,
            fontsize=14):
     '''
-    Make Sankey Diagram showing flow from before-->after
+    Make Sankey Diagram showing flow from left-->right
 
     Inputs:
-        left = NumPy array of object labels on the left of the digram
-        right = NumPy array of corresponding labels on the right of the digram
+        left = NumPy array of object labels on the left of the diagram
+        right = NumPy array of corresponding labels on the right of the diagram
             len(right) == len(left)
-        colorDict = Dictionary of colors to use for each label:
-            {'label': 'color'}
-        aspect = vertical extent of the digram in units of horizontal extent
+        leftWeight = NumPy array of weights for each strip starting from the
+            left of the diagram, if not specified 1 is assigned
+        rightWeight = NumPy array of weights for each strip starting from the
+            right of the diagram, if not specified the corresponding leftWeight
+            is assigned
+        colorDict = Dictionary of colors to use for each label
+            {'label':'color'}
+        leftLabels = order of the left labels in the diagram
+        rightLabels = order of the right labels in the diagram
+        aspect = vertical extent of the diagram in units of horizontal extent
         rightColor = If true, each strip in the diagram will be be colored
                     according to its left label
     Ouput:
         None
     '''
+    if leftWeight is None:
+        leftWeight = []
+    if rightWeight is None:
+        rightWeight = []
+    if leftLabels is None:
+        leftLabels = []
+    if rightLabels is None:
+        rightLabels = []
+    # Check weights
+    if len(leftWeight) == 0:
+        leftWeight = np.ones(len(left))
+
+    if len(rightWeight) == 0:
+        rightWeight = leftWeight
+
     plt.figure()
     plt.rc('text', usetex=False)
     plt.rc('font', family='serif')
-    sns.set_style("white", {'font.family': [u'serif']})
-    df = pd.DataFrame({'before': before, 'after': after},
-                      index=range(len(before)))
 
-    # Identify all labels that appear 'before' or 'after'
-    # allLabels = pd.Series(
-    #    np.r_[np.array(Counter(before).most_common())[:,0],
-    #          np.array(Counter(after).most_common())[:,0]]
-    # ).unique()
-    allLabels = np.array(Counter(np.r_[before, after]).most_common())[:, 0][::-1]
+    # Create Dataframe
+    df = pd.DataFrame({'left': left, 'right': right, 'leftWeight': leftWeight,
+                       'rightWeight': rightWeight}, index=range(len(left)))
+
+    # Identify all labels that appear 'left' or 'right'
+    allLabels = pd.Series(np.r_[df.left.unique(), df.right.unique()]).unique()
+
+    # Identify left labels
+    if len(leftLabels) == 0:
+        leftLabels = pd.Series(df.left.unique()).unique()
+
+    # Identify right labels
+    if len(rightLabels) == 0:
+        rightLabels = pd.Series(df.right.unique()).unique()
 
     # If no colorDict given, make one
     if colorDict is None:
@@ -66,83 +92,98 @@ def sankey(before, after, colorDict=None, aspect=4, rightColor=False,
             colorDict[l] = cls[i]
 
     # Determine widths of individual strips
-    ns = defaultdict()
-    for l in allLabels:
-        myD = {}
-        for l2 in allLabels:
-            myD[l2] = len(df[(df.before == l) & (df.after == l2)])
-        ns[l] = myD
+    ns_l = defaultdict()
+    ns_r = defaultdict()
+    for l in leftLabels:
+        myD_l = {}
+        myD_r = {}
+        for l2 in rightLabels:
+            myD_l[l2] = df[(df.left == l) & (df.right == l2)].leftWeight.sum()
+            myD_r[l2] = df[(df.left == l) & (df.right == l2)].rightWeight.sum()
+        ns_l[l] = myD_l
+        ns_r[l] = myD_r
 
-    # Determine positions of left and right label patches and total widths
-    widths = defaultdict()
-    for i, l in enumerate(allLabels):
+    # Determine positions of left label patches and total widths
+    widths_left = defaultdict()
+    for i, l in enumerate(leftLabels):
         myD = {}
-        myD['left'] = len(df[df.before == l])
-        myD['right'] = len(df[df.after == l])
-        myD['total'] = max(myD['left'], myD['right'])
+        myD['left'] = df[df.left == l].leftWeight.sum()
         if i == 0:
             myD['bottom'] = 0
-            myD['top'] = myD['total']
-            myD['leftBottom'] = 0.5 * (myD['top'] + myD['bottom']) - 0.5 * myD['left']
-            myD['rightBottom'] = 0.5 * (myD['top'] + myD['bottom']) - 0.5 * myD['right']
+            myD['top'] = myD['left']
         else:
-            myD['bottom'] = widths[allLabels[i - 1]]['top'] + 0.02 * len(df)
-            myD['top'] = myD['bottom'] + myD['total']
-            myD['leftBottom'] = 0.5 * (myD['top'] + myD['bottom']) - 0.5 * myD['left']
-            myD['rightBottom'] = 0.5 * (myD['top'] + myD['bottom']) - 0.5 * myD['right']
+            myD['bottom'] = widths_left[leftLabels[i - 1]]['top'] + 0.02 * len(df)
+            myD['top'] = myD['bottom'] + myD['left']
             topEdge = myD['top']
-        widths[l] = myD
+        widths_left[l] = myD
+
+    # Determine positions of right label patches and total widths
+    widths_right = defaultdict()
+    for i, l in enumerate(rightLabels):
+        myD = {}
+        myD['right'] = df[df.right == l].rightWeight.sum()
+        if i == 0:
+            myD['bottom'] = 0
+            myD['top'] = myD['right']
+        else:
+            myD['bottom'] = widths_right[rightLabels[i - 1]]['top'] + 0.02 * len(df)
+            myD['top'] = myD['bottom'] + myD['right']
+            topEdge = myD['top']
+        widths_right[l] = myD
 
     # Total vertical extent of diagram
     xMax = topEdge / aspect
 
-    # Draw vertical bars on left & right of each label's section & print label
-    for l in allLabels:
+    # Draw vertical bars on left and right of each  label's section & print label
+    for l in leftLabels:
         plt.fill_between(
-            [-0.02 * xMax, 0], 2 * [widths[l]['leftBottom']],
-            2 * [widths[l]['leftBottom'] + widths[l]['left']],
-            color=colorDict[l],
-            alpha=0.99
-        )
-        plt.fill_between(
-            [xMax, 1.02 * xMax], 2 * [widths[l]['rightBottom']],
-            2 * [widths[l]['rightBottom'] + widths[l]['right']],
+            [-0.02 * xMax, 0],
+            2 * [widths_left[l]['bottom']],
+            2 * [widths_left[l]['bottom'] + widths_left[l]['left']],
             color=colorDict[l],
             alpha=0.99
         )
         plt.text(
-            -0.05 * xMax, widths[l]['leftBottom'] + 0.5 * widths[l]['left'],
+            -0.05 * xMax,
+            widths_left[l]['bottom'] + 0.5 * widths_left[l]['left'],
             l,
             {'ha': 'right', 'va': 'center'},
             fontsize=fontsize
         )
+    for l in rightLabels:
+        plt.fill_between(
+            [xMax, 1.02 * xMax], 2 * [widths_right[l]['bottom']],
+            2 * [widths_right[l]['bottom'] + widths_right[l]['right']],
+            color=colorDict[l],
+            alpha=0.99
+        )
         plt.text(
-            1.05 * xMax, widths[l]['rightBottom'] + 0.5 * widths[l]['right'],
+            1.05 * xMax, widths_right[l]['bottom'] + 0.5 * widths_right[l]['right'],
             l,
             {'ha': 'left', 'va': 'center'},
             fontsize=fontsize
         )
 
     # Plot strips
-    for l in allLabels:
-        for l2 in allLabels:
+    for l in leftLabels:
+        for l2 in rightLabels:
             lc = l
             if rightColor:
                 lc = l2
-            # Create array of y values for each strip, half at left value, half at right, convolve
-            ys = np.array(
-                50 * [widths[l]['leftBottom'] + 0.5 * ns[l][l2]] + 50 * [widths[l2]['rightBottom'] + 0.5 * ns[l][l2]]
-            )
-            ys = np.convolve(ys, 0.05 * np.ones(20), mode='valid')
-            ys = np.convolve(ys, 0.05 * np.ones(20), mode='valid')
+            if len(df[(df.left == l) & (df.right == l2)]) > 0:
+                # Create array of y values for each strip, half at left value, half at right, convolve
+                ys_d = np.array(50 * [widths_left[l]['bottom']] + 50 * [widths_right[l2]['bottom']])
+                ys_d = np.convolve(ys_d, 0.05 * np.ones(20), mode='valid')
+                ys_d = np.convolve(ys_d, 0.05 * np.ones(20), mode='valid')
+                ys_u = np.array(50 * [widths_left[l]['bottom'] + ns_l[l][l2]] + 50 * [widths_right[l2]['bottom'] + ns_r[l][l2]])
+                ys_u = np.convolve(ys_u, 0.05 * np.ones(20), mode='valid')
+                ys_u = np.convolve(ys_u, 0.05 * np.ones(20), mode='valid')
 
-            # Update bottom edges at each label so next strip starts at the
-            # right place
-            widths[l]['leftBottom'] = widths[l]['leftBottom'] + ns[l][l2]
-            widths[l2]['rightBottom'] = widths[l2]['rightBottom'] + ns[l][l2]
-            plt.fill_between(np.linspace(0, xMax, len(ys)),
-                             ys - 0.5 * ns[l][l2], ys + 0.5 * ns[l][l2],
-                             alpha=0.65,
-                             color=colorDict[lc])
-
+                # Update bottom edges at each label so next strip starts at the right place
+                widths_left[l]['bottom'] = widths_left[l]['bottom'] + ns_l[l][l2]
+                widths_right[l2]['bottom'] = widths_right[l2]['bottom'] + ns_r[l][l2]
+                plt.fill_between(
+                    np.linspace(0, xMax, len(ys_d)), ys_d, ys_u, alpha=0.65,
+                    color=colorDict[lc]
+                )
     plt.gca().axis('off')
