@@ -180,8 +180,8 @@ def sankey(left, right, leftWeight=None, rightWeight=None, colorDict=None,
                 ys_u = np.convolve(ys_u, 0.05 * np.ones(20), mode='valid')
 
                 # Update bottom edges at each label so next strip starts at the right place
-                widths_left[l]['bottom'] = widths_left[l]['bottom'] + ns_l[l][l2]
-                widths_right[l2]['bottom'] = widths_right[l2]['bottom'] + ns_r[l][l2]
+                widths_left[l]['bottom'] += ns_l[l][l2]
+                widths_right[l2]['bottom'] += ns_r[l][l2]
                 plt.fill_between(
                     np.linspace(0, xMax, len(ys_d)), ys_d, ys_u, alpha=0.65,
                     color=colorDict[lc]
