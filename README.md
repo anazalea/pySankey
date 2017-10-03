@@ -1,32 +1,20 @@
 # pySankey
 
-Uses matplotlib to create the kind of <a href="https://en.wikipedia.org/wiki/Sankey_diagram">Sankey diagrams</a> that I need.
+Uses matplotlib to create simple <a href="https://en.wikipedia.org/wiki/Sankey_diagram">
+Sankey diagrams</a> flowing only from left to right.
 
-Requires seaborn, pandas, numPy, matplotlib.
+## Requirements
 
-![Fruity Alchemy](https://github.com/anazalea/pySankey/blob/master/fruits.png)
+Requires python-tk (for python 2.7) or python3-tk (for python 3.x) you can
+install the other requirements with:
 
-```python
-import sankey
-import numpy as np
-import matplotlib.pyplot as plt
-import pandas as pd
-pd.options.display.max_rows=8
-%matplotlib inline
+``` bash
+    pip install -r requirements.txt
 ```
 
+## Example
 
-```python
-df = pd.read_csv('./fruits2.txt',sep = ' ',names=['true','predicted'])
-```
-
-
-```python
-df
-```
-
-
-
+With fruits.txt :
 
 <div>
 <table border="1" class="dataframe">
@@ -88,19 +76,54 @@ df
 <p>1000 rows × 2 columns</p>
 </div>
 
-
-
-
-```python
-colorDict =  {'apple':'#f71b1b','blueberry':'#1b7ef7','banana':'#f3f71b','lime':'#12e23f','orange':'#f78c1b'}
-```
-
+You can generate a sankey's diagram with this code:
 
 ```python
+import sankey
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+pd.options.display.max_rows=8
+%matplotlib inline
+df = pd.read_csv('fruits.txt',sep = ' ',names=['true','predicted'])
+colorDict =  {'apple':'#f71b1b','blueberry':'#1b7ef7','banana':'#f3f71b',
+              'lime':'#12e23f','orange':'#f78c1b'}
 sankey.sankey(df['true'],df['predicted'],aspect=20,colorDict=colorDict,fontsize=10)
 plt.gcf().set_size_inches(6,6)
 plt.savefig('fruit.png',bbox_inches='tight',dpi=150)
+plt.close()
 ```
 
+![Fruity Alchemy](fruits.png)
 
-![Fruity Alchemy](https://github.com/anazalea/pySankey/blob/master/fruits.png)
+You could also use weight:
+
+```
+,customer,good,revenue
+0,John,fruit,5.5
+1,Mike,meat,11.0
+2,Betty,drinks,7.0
+3,Ben,fruit,4.0
+4,Betty,bread,2.0
+5,John,bread,2.5
+6,John,drinks,8.0
+7,Ben,bread,2.0
+8,Mike,bread,3.5
+9,John,meat,13.0
+```
+
+```python
+import sankey
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+pd.options.display.max_rows=8
+%matplotlib inline
+df = pd.read_csv('customers-goods.csv',sep = ',',names=['id', 'customer','good','revenue'])
+# actual call is left as an exercice to the reader
+plt.gcf().set_size_inches(6,6)
+plt.savefig('customer-good.png',bbox_inches='tight',dpi=150)
+plt.close()
+```
+
+![Customer goods](customers-goods.png)
