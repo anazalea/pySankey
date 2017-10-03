@@ -83,15 +83,15 @@ import sankey
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+
 pd.options.display.max_rows=8
 %matplotlib inline
+
 df = pd.read_csv('fruits.txt',sep = ' ',names=['true','predicted'])
 colorDict =  {'apple':'#f71b1b','blueberry':'#1b7ef7','banana':'#f3f71b',
               'lime':'#12e23f','orange':'#f78c1b'}
-sankey.sankey(df['true'],df['predicted'],aspect=20,colorDict=colorDict,fontsize=10)
-plt.gcf().set_size_inches(6,6)
-plt.savefig('fruit.png',bbox_inches='tight',dpi=150)
-plt.close()
+sankey.sankey(df['true'], df['predicted'], aspect=20, colorDict=colorDict,
+              fontsize=1, figure_name="fruit")
 ```
 
 ![Fruity Alchemy](fruits.png)
@@ -120,10 +120,10 @@ import pandas as pd
 pd.options.display.max_rows=8
 %matplotlib inline
 df = pd.read_csv('customers-goods.csv',sep = ',',names=['id', 'customer','good','revenue'])
-# actual call is left as an exercice to the reader
-plt.gcf().set_size_inches(6,6)
-plt.savefig('customer-good.png',bbox_inches='tight',dpi=150)
-plt.close()
+# actual call is left as an exercice to the reader but it could be something like
+# sankey.sankey(left=df['customer'], right=df['good'], rightWeight=df['revenue'],
+#               aspect=20, colorDict=colorDict, fontsize=20,
+#               figure_name="customer-good")
 ```
 
 ![Customer goods](customers-goods.png)
