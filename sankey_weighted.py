@@ -37,7 +37,7 @@ plt.rc('font', family='serif')
 
 def sankey_weighted(left, right, leftWeight=None, rightWeight=None,
                     colorDict=None, leftLabels=None, rightLabels=None,
-                    aspect=4, rightColor=False):
+                    aspect=4, rightColor=False, fontsize=20):
     '''
     Make Sankey Diagram showing flow from left-->right
 
@@ -155,7 +155,7 @@ def sankey_weighted(left, right, leftWeight=None, rightWeight=None,
             widths_left[l]['bottom'] + 0.5 * widths_left[l]['left'],
             l,
             {'ha': 'right', 'va': 'center'},
-            fontsize=20
+            fontsize=fontsize
         )
     for l in rightLabels:
         plt.fill_between(
@@ -168,7 +168,7 @@ def sankey_weighted(left, right, leftWeight=None, rightWeight=None,
             1.05 * xMax, widths_right[l]['bottom'] + 0.5 * widths_right[l]['right'],
             l,
             {'ha': 'left', 'va': 'center'},
-            fontsize=20
+            fontsize=fontsize
         )
 
     # Plot strips
