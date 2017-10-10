@@ -26,7 +26,7 @@ import seaborn as sns
 
 def sankey(left, right, leftWeight=None, rightWeight=None, colorDict=None,
            leftLabels=None, rightLabels=None, aspect=4, rightColor=False,
-           fontsize=14, figure_name="pysankey"):
+           fontsize=14, figure_name=None,closePlot=False):
     '''
     Make Sankey Diagram showing flow from left-->right
 
@@ -112,7 +112,7 @@ def sankey(left, right, leftWeight=None, rightWeight=None, colorDict=None,
             myD['bottom'] = 0
             myD['top'] = myD['left']
         else:
-            myD['bottom'] = widths_left[leftLabels[i - 1]]['top'] + 0.02 * len(df)
+            myD['bottom'] = widths_left[leftLabels[i - 1]]['top'] + 0.02 * df.leftWeight.sum()
             myD['top'] = myD['bottom'] + myD['left']
             topEdge = myD['top']
         widths_left[l] = myD
@@ -126,7 +126,7 @@ def sankey(left, right, leftWeight=None, rightWeight=None, colorDict=None,
             myD['bottom'] = 0
             myD['top'] = myD['right']
         else:
-            myD['bottom'] = widths_right[rightLabels[i - 1]]['top'] + 0.02 * len(df)
+            myD['bottom'] = widths_right[rightLabels[i - 1]]['top'] + 0.02 * df.rightWeight.sum()
             myD['top'] = myD['bottom'] + myD['right']
             topEdge = myD['top']
         widths_right[l] = myD
@@ -188,5 +188,7 @@ def sankey(left, right, leftWeight=None, rightWeight=None, colorDict=None,
                 )
     plt.gca().axis('off')
     plt.gcf().set_size_inches(6, 6)
-    plt.savefig("{}.png".format(figure_name), bbox_inches='tight', dpi=150)
-    plt.close()
+    if figure_name!=None:
+        plt.savefig("{}.png".format(figure_name), bbox_inches='tight', dpi=150)
+    if closePlot:
+        plt.close()
