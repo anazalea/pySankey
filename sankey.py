@@ -71,6 +71,9 @@ def sankey(left, right, leftWeight=None, rightWeight=None, colorDict=None,
     # Create Dataframe
     df = pd.DataFrame({'left': left, 'right': right, 'leftWeight': leftWeight,
                        'rightWeight': rightWeight}, index=range(len(left)))
+    
+    if len(df[(df.left.isnull()) | (df.right.isnull())]):
+        raise RuntimeError('Sankey graph does not support null values.')
 
     # Identify all labels that appear 'left' or 'right'
     allLabels = pd.Series(np.r_[df.left.unique(), df.right.unique()]).unique()
@@ -78,10 +81,16 @@ def sankey(left, right, leftWeight=None, rightWeight=None, colorDict=None,
     # Identify left labels
     if len(leftLabels) == 0:
         leftLabels = pd.Series(df.left.unique()).unique()
+    else:
+        if set(leftLabels) != set(df['left'].unique().tolist()):
+            raise RuntimeError('Left labels and left data do not match.')
 
     # Identify right labels
     if len(rightLabels) == 0:
         rightLabels = pd.Series(df.right.unique()).unique()
+    else:
+        if set(rightLabels) != set(df['right'].unique().tolist()):
+            raise RuntimeError('Right labels and right data do not match.')
 
     # If no colorDict given, make one
     if colorDict is None:
@@ -90,6 +99,11 @@ def sankey(left, right, leftWeight=None, rightWeight=None, colorDict=None,
         cls = sns.color_palette(pal, len(allLabels))
         for i, l in enumerate(allLabels):
             colorDict[l] = cls[i]
+    else:
+        missing = [label for label in allLabels if label not in colorDict.keys()]
+        if missing:
+            raise RuntimeError('colorDict specified but missing values: '
+                                '{}'.format(','.join(missing)))
 
     # Determine widths of individual strips
     ns_l = defaultdict()
