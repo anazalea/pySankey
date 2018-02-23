@@ -69,6 +69,10 @@ def sankey(left, right, leftWeight=None, rightWeight=None, colorDict=None,
     plt.rc('font', family='serif')
 
     # Create Dataframe
+    if isinstance(left, pd.Series):
+        left = left.reset_index(drop=True)
+    if isinstance(right, pd.Series):
+        right = right.reset_index(drop=True)
     df = pd.DataFrame({'left': left, 'right': right, 'leftWeight': leftWeight,
                        'rightWeight': rightWeight}, index=range(len(left)))
     
