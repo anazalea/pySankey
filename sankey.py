@@ -23,6 +23,30 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
+class pySankeyException(Exception):
+    pass
+class NullsInFrame(pySankeyException):
+    pass
+class LabelMismatch(pySankeyException):
+    pass
+
+def check_data_matches_labels(labels, data, side):
+    if len(labels >0):
+        if isinstance(data, list):
+            data = set(data)
+        if isinstance(data, pd.Series):
+            data = set(data.unique().tolist())
+        if isinstance(labels, list):
+            labels = set(labels)
+        if labels != data:
+            msg = "\n"
+            if len(labels) <= 20:
+                msg = "Labels: " + ",".join(labels) +"\n"
+            if len(data) < 20:
+                msg += "Data: " + ",".join(data)
+            raise LabelMismatch('{0} labels and data do not match.{1}'.format(side, msg))
+    
+
 
 def sankey(left, right, leftWeight=None, rightWeight=None, colorDict=None,
            leftLabels=None, rightLabels=None, aspect=4, rightColor=False,
@@ -77,7 +101,7 @@ def sankey(left, right, leftWeight=None, rightWeight=None, colorDict=None,
                        'rightWeight': rightWeight}, index=range(len(left)))
     
     if len(df[(df.left.isnull()) | (df.right.isnull())]):
-        raise RuntimeError('Sankey graph does not support null values.')
+        raise NullsInFrame('Sankey graph does not support null values.')
 
     # Identify all labels that appear 'left' or 'right'
     allLabels = pd.Series(np.r_[df.left.unique(), df.right.unique()]).unique()
@@ -86,16 +110,13 @@ def sankey(left, right, leftWeight=None, rightWeight=None, colorDict=None,
     if len(leftLabels) == 0:
         leftLabels = pd.Series(df.left.unique()).unique()
     else:
-        if set(leftLabels) != set(df['left'].unique().tolist()):
-            raise RuntimeError('Left labels and left data do not match.')
+        check_data_matches_labels(leftLabels, df['left'], 'left')
 
     # Identify right labels
     if len(rightLabels) == 0:
         rightLabels = pd.Series(df.right.unique()).unique()
     else:
-        if set(rightLabels) != set(df['right'].unique().tolist()):
-            raise RuntimeError('Right labels and right data do not match.')
-
+        check_data_matches_labels(leftLabels, df['right'], 'right')
     # If no colorDict given, make one
     if colorDict is None:
         colorDict = {}
