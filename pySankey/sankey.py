@@ -23,15 +23,21 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
+
 class pySankeyException(Exception):
     pass
+
+
 class NullsInFrame(pySankeyException):
     pass
+
+
 class LabelMismatch(pySankeyException):
     pass
 
+
 def check_data_matches_labels(labels, data, side):
-    if len(labels >0):
+    if len(labels > 0):
         if isinstance(data, list):
             data = set(data)
         if isinstance(data, pd.Series):
@@ -41,16 +47,15 @@ def check_data_matches_labels(labels, data, side):
         if labels != data:
             msg = "\n"
             if len(labels) <= 20:
-                msg = "Labels: " + ",".join(labels) +"\n"
+                msg = "Labels: " + ",".join(labels) + "\n"
             if len(data) < 20:
                 msg += "Data: " + ",".join(data)
             raise LabelMismatch('{0} labels and data do not match.{1}'.format(side, msg))
-    
 
 
 def sankey(left, right, leftWeight=None, rightWeight=None, colorDict=None,
            leftLabels=None, rightLabels=None, aspect=4, rightColor=False,
-           fontsize=14, figure_name=None,closePlot=False):
+           fontsize=14, figure_name=None, closePlot=False):
     '''
     Make Sankey Diagram showing flow from left-->right
 
@@ -99,7 +104,7 @@ def sankey(left, right, leftWeight=None, rightWeight=None, colorDict=None,
         right = right.reset_index(drop=True)
     df = pd.DataFrame({'left': left, 'right': right, 'leftWeight': leftWeight,
                        'rightWeight': rightWeight}, index=range(len(left)))
-    
+
     if len(df[(df.left.isnull()) | (df.right.isnull())]):
         raise NullsInFrame('Sankey graph does not support null values.')
 
@@ -128,7 +133,7 @@ def sankey(left, right, leftWeight=None, rightWeight=None, colorDict=None,
         missing = [label for label in allLabels if label not in colorDict.keys()]
         if missing:
             raise RuntimeError('colorDict specified but missing values: '
-                                '{}'.format(','.join(missing)))
+                               '{}'.format(','.join(missing)))
 
     # Determine widths of individual strips
     ns_l = defaultdict()
@@ -210,7 +215,8 @@ def sankey(left, right, leftWeight=None, rightWeight=None, colorDict=None,
             if rightColor:
                 lc = l2
             if len(df[(df.left == l) & (df.right == l2)]) > 0:
-                # Create array of y values for each strip, half at left value, half at right, convolve
+                # Create array of y values for each strip, half at left value,
+                # half at right, convolve
                 ys_d = np.array(50 * [widths_left[l]['bottom']] + 50 * [widths_right[l2]['bottom']])
                 ys_d = np.convolve(ys_d, 0.05 * np.ones(20), mode='valid')
                 ys_d = np.convolve(ys_d, 0.05 * np.ones(20), mode='valid')
@@ -227,7 +233,7 @@ def sankey(left, right, leftWeight=None, rightWeight=None, colorDict=None,
                 )
     plt.gca().axis('off')
     plt.gcf().set_size_inches(6, 6)
-    if figure_name!=None:
+    if figure_name != None:
         plt.savefig("{}.png".format(figure_name), bbox_inches='tight', dpi=150)
     if closePlot:
         plt.close()
