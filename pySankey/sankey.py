@@ -24,15 +24,15 @@ import pandas as pd
 import seaborn as sns
 
 
-class pySankeyException(Exception):
+class PySankeyException(Exception):
     pass
 
 
-class NullsInFrame(pySankeyException):
+class NullsInFrame(PySankeyException):
     pass
 
 
-class LabelMismatch(pySankeyException):
+class LabelMismatch(PySankeyException):
     pass
 
 
