@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pySankey",
-    version="0.0.1",
+    version="1.0.0",
     author="anazalea",
     author_email="anneyagolob@gmail.com",
     description="Make simple, pretty Sankey Diagrams",

@@ -79,7 +79,7 @@ With fruits.txt :
 You can generate a sankey's diagram with this code:
 
 ```python
-import sankey
+from pysankey import sankey
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -113,7 +113,7 @@ You could also use weight:
 ```
 
 ```python
-import sankey
+from pysankey import sankey
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
