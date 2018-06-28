@@ -94,7 +94,7 @@ sankey.sankey(df['true'], df['predicted'], aspect=20, colorDict=colorDict,
               fontsize=1, figure_name="fruit")
 ```
 
-![Fruity Alchemy](fruits.png)
+![Fruity Alchemy](pysankey/fruits.png)
 
 You could also use weight:
 
@@ -126,4 +126,4 @@ df = pd.read_csv('customers-goods.csv',sep = ',',names=['id', 'customer','good',
 #               figure_name="customer-good")
 ```
 
-![Customer goods](customers-goods.png)
+![Customer goods](pysankey/customers-goods.png)
