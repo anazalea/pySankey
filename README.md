@@ -79,7 +79,7 @@ With fruits.txt :
 You can generate a sankey's diagram with this code:
 
 ```python
-import sankey
+from pysankey import sankey
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -90,11 +90,11 @@ pd.options.display.max_rows=8
 df = pd.read_csv('fruits.txt',sep = ' ',names=['true','predicted'])
 colorDict =  {'apple':'#f71b1b','blueberry':'#1b7ef7','banana':'#f3f71b',
               'lime':'#12e23f','orange':'#f78c1b'}
-sankey.sankey(df['true'], df['predicted'], aspect=20, colorDict=colorDict,
-              fontsize=1, figure_name="fruit")
+sankey(df['true'], df['predicted'], aspect=20, colorDict=colorDict,
+              fontsize=1, figureName="fruit")
 ```
 
-![Fruity Alchemy](fruits.png)
+![Fruity Alchemy](pysankey/fruits.png)
 
 You could also use weight:
 
@@ -113,7 +113,7 @@ You could also use weight:
 ```
 
 ```python
-import sankey
+from pysankey import sankey
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -121,9 +121,8 @@ pd.options.display.max_rows=8
 %matplotlib inline
 df = pd.read_csv('customers-goods.csv',sep = ',',names=['id', 'customer','good','revenue'])
 # actual call is left as an exercice to the reader but it could be something like
-# sankey.sankey(left=df['customer'], right=df['good'], rightWeight=df['revenue'],
-#               aspect=20, colorDict=colorDict, fontsize=20,
-#               figure_name="customer-good")
+# sankey(left=df['customer'], right=df['good'], rightWeight=df['revenue'],
+#        aspect=20, colorDict=colorDict, fontsize=20, figureName="customer-good")
 ```
 
-![Customer goods](customers-goods.png)
+![Customer goods](pysankey/customers-goods.png)
