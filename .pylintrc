@@ -3,3 +3,5 @@
 good-names=i,j,k
 variable-naming-style=camelCase
 argument-naming-style=camelCase
+
+disable=len-as-condition

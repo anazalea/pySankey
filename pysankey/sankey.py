@@ -37,7 +37,7 @@ class LabelMismatch(PySankeyException):
 
 
 def check_data_matches_labels(labels, data, side):
-    if labels:
+    if len(labels > 0):
         if isinstance(data, list):
             data = set(data)
         if isinstance(data, pd.Series):
@@ -87,9 +87,10 @@ def sankey(left, right, leftWeight=None, rightWeight=None, colorDict=None,
     if rightLabels is None:
         rightLabels = []
     # Check weights
-    if not leftWeight:
+    if len(leftWeight) == 0:
         leftWeight = np.ones(len(left))
-    if not rightWeight:
+
+    if len(rightWeight) == 0:
         rightWeight = leftWeight
 
     plt.figure()
@@ -104,20 +105,20 @@ def sankey(left, right, leftWeight=None, rightWeight=None, colorDict=None,
     dataFrame = pd.DataFrame({'left': left, 'right': right, 'leftWeight': leftWeight,
                               'rightWeight': rightWeight}, index=range(len(left)))
 
-    if dataFrame[(dataFrame.left.isnull()) | (dataFrame.right.isnull())]:
+    if len(dataFrame[(dataFrame.left.isnull()) | (dataFrame.right.isnull())]):
         raise NullsInFrame('Sankey graph does not support null values.')
 
     # Identify all labels that appear 'left' or 'right'
     allLabels = pd.Series(np.r_[dataFrame.left.unique(), dataFrame.right.unique()]).unique()
 
     # Identify left labels
-    if not leftLabels:
+    if len(leftLabels) == 0:
         leftLabels = pd.Series(dataFrame.left.unique()).unique()
     else:
         check_data_matches_labels(leftLabels, dataFrame['left'], 'left')
 
     # Identify right labels
-    if not rightLabels:
+    if len(rightLabels) == 0:
         rightLabels = pd.Series(dataFrame.right.unique()).unique()
     else:
         check_data_matches_labels(leftLabels, dataFrame['right'], 'right')
@@ -214,7 +215,7 @@ def sankey(left, right, leftWeight=None, rightWeight=None, colorDict=None,
             labelColor = leftLabel
             if rightColor:
                 labelColor = rightLabel
-            if dataFrame[(dataFrame.left == leftLabel) & (dataFrame.right == rightLabel)]:
+            if len(dataFrame[(dataFrame.left == leftLabel) & (dataFrame.right == rightLabel)]) > 0:
                 # Create array of y values for each strip, half at left value,
                 # half at right, convolve
                 ys_d = np.array(50 * [leftWidths[leftLabel]['bottom']] + 50 * [rightWidths[rightLabel]['bottom']])
