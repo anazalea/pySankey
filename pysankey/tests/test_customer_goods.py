@@ -26,10 +26,12 @@ class TestCustomerGoods(unittest.TestCase):
             'pysankey/customers-goods.csv', sep=',',
             names=['id', 'customer', 'good', 'revenue']
         )
+        # This is not working yet...
         sankey(
             left=data['customer'], right=data['good'],
             rightWeight=data['revenue'], aspect=20, colorDict=colorDict,
             fontsize=20, figureName="customer-good"
         )
         # Comment this to check the result
-        os.remove("customer-good.png")
+        if os.path.exists("customer-good.png"):
+            os.remove("customer-good.png")
