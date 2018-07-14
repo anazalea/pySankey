@@ -3,6 +3,10 @@
 Uses matplotlib to create simple <a href="https://en.wikipedia.org/wiki/Sankey_diagram">
 Sankey diagrams</a> flowing only from left to right.
 
+[![PyPI version](https://badge.fury.io/py/pySankey.svg)](https://badge.fury.io/py/pySankey)
+[![Build Status](https://travis-ci.org/anazalea/pySankey.svg?branch=master)](https://travis-ci.org/anazalea/pySankey)
+[![Coverage Status](https://coveralls.io/repos/github/anazalea/pySankey/badge.svg?branch=master)](https://coveralls.io/github/anazalea/pySankey?branch=master)
+
 ## Requirements
 
 Requires python-tk (for python 2.7) or python3-tk (for python 3.x) you can
