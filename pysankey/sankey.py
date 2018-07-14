@@ -132,8 +132,9 @@ def sankey(left, right, leftWeight=None, rightWeight=None, colorDict=None,
     else:
         missing = [label for label in allLabels if label not in colorDict.keys()]
         if missing:
-            raise RuntimeError('colorDict specified but missing values: '
-                               '{}'.format(','.join(missing)))
+            msg = "The colorDict parameter is missing values for the following labels : "
+            msg += '{}'.format(', '.join(missing))
+            raise ValueError(msg)
 
     # Determine widths of individual strips
     ns_l = defaultdict()
