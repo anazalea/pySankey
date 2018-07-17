@@ -126,25 +126,13 @@ You could also use weight:
 import pandas as pd
 from pysankey import sankey
 
-colorDict = { # Color are random and ugly
-    "customer": '#171b1b',
-    "John": '#371b1b',
-    "Mike": '#571b1b',
-    "Betty": '#771b1b',
-    "Ben": '#971b1b',
-    "good": '#a71b1b',
-    "fruit": '#c71b1b',
-    "meat": '#fd1b1b',
-    "drinks": '#e71b1b',
-    "bread": '#f71b1b'
-}
 df = pd.read_csv(
     'pysankey/customers-goods.csv', sep=',',
     names=['id', 'customer', 'good', 'revenue']
 )
 sankey(
     left=df['customer'], right=df['good'], rightWeight=df['revenue'], aspect=20,
-    colorDict=colorDict, fontsize=20, figureName="customer-good"
+    fontsize=20, figureName="customer-good"
 )
 # Result is in "customer-good.png"
 ```
