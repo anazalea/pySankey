@@ -20,7 +20,7 @@ class TestErrorCase(unittest.TestCase):
             'apple':'#f71b1b',
             'orange':'#f78c1b'
         }
-        self.assertRaises(ValueError, sankey,
-            self.data['true'], self.data['predicted'], aspect=20,
-            colorDict=colorDict, fontsize=12, figureName="fruit"
-        )
+        with self.assertRaises(ValueError) as value_error:
+            sankey(self.data['true'], self.data['predicted'], aspect=20,
+                   colorDict=colorDict, fontsize=12, figureName="fruit")
+        self.assertIn(': blueberry, lime, banana', str(value_error.exception))
