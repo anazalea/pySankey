@@ -1,26 +1,23 @@
 # -*- coding: utf-8 -*-
 
-import unittest
-
-import pandas as pd
 from pysankey import sankey
+from pysankey.tests.test_fruit import TestFruit
 
 
-class TestErrorCase(unittest.TestCase):
+class TestErrorCase(TestFruit):
 
-    def setUp(self):
-        pd.options.display.max_rows = 8
-        self.data = pd.read_csv(
-            'pysankey/fruits.txt', sep=' ', names=['true', 'predicted']
-        )
+    """ Test sankey's error case. """
 
     def test_bad_color_labels(self):
         """ sankey raise a value error when there is not enough color info"""
-        colorDict = {
+        bad_color_dict = {
             'apple':'#f71b1b',
             'orange':'#f78c1b'
         }
         with self.assertRaises(ValueError) as value_error:
-            sankey(self.data['true'], self.data['predicted'], aspect=20,
-                   colorDict=colorDict, fontsize=12, figureName="fruit")
+            sankey(
+                self.data['true'], self.data['predicted'], aspect=20,
+                colorDict=bad_color_dict, fontsize=12,
+                figureName=self.figure_name
+            )
         self.assertIn(': blueberry, lime, banana', str(value_error.exception))
