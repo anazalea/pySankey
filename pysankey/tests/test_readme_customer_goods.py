@@ -8,6 +8,7 @@ class TestReadmeCustomerGood(TestCustomerGood):
 
     def test_no_fail_readme(self):
         # This is not working yet...
-        sankey(left=self.data['customer'], right=self.data['good'],
-               rightWeight=self.data['revenue'], aspect=20,
-               fontsize=20, figureName=self.figure_name)
+        weight = self.data['revenue'].values[1:].astype(float)
+        sankey(left=self.data['customer'].values[1:], right=self.data['good'].values[1:],
+               rightWeight=weight, leftWeight=weight, aspect=20, fontsize=10,
+               figureName=self.figure_name)

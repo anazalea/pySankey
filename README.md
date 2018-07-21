@@ -130,9 +130,11 @@ df = pd.read_csv(
     'pysankey/customers-goods.csv', sep=',',
     names=['id', 'customer', 'good', 'revenue']
 )
+weight = df['revenue'].values[1:].astype(float)
 sankey(
-    left=df['customer'], right=df['good'], rightWeight=df['revenue'], aspect=20,
-    fontsize=20, figureName="customer-good"
+    left=df['customer'].values[1:], right=df['good'].values[1:],
+    rightWeight=weight, leftWeight=weight, aspect=20, fontsize=20,
+    figureName="customer-good"
 )
 # Result is in "customer-good.png"
 ```

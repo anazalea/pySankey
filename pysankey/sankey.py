@@ -17,6 +17,7 @@ Produces simple Sankey Diagrams with matplotlib.
 """
 
 from collections import defaultdict
+import logging
 
 import matplotlib
 matplotlib.use('Agg')
@@ -26,7 +27,11 @@ import pandas as pd
 import seaborn as sns
 
 
+LOGGER = logging.getLogger(__name__)
+logging.basicConfig(level=logging.WARN)
+
 class PySankeyException(Exception):
+    """ Generic PySankey Exception. """
     pass
 
 
@@ -111,6 +116,7 @@ def sankey(left, right, leftWeight=None, rightWeight=None, colorDict=None,
 
     # Identify all labels that appear 'left' or 'right'
     allLabels = pd.Series(np.r_[dataFrame.left.unique(), dataFrame.right.unique()]).unique()
+    LOGGER.debug(f"Labels to handle : {allLabels}")
 
     # Identify left labels
     if len(leftLabels) == 0:
@@ -136,7 +142,7 @@ def sankey(left, right, leftWeight=None, rightWeight=None, colorDict=None,
             msg = "The colorDict parameter is missing values for the following labels : "
             msg += '{}'.format(', '.join(missing))
             raise ValueError(msg)
-
+    LOGGER.debug(f"The colordict value are : {colorDict}")
     # Determine widths of individual strips
     ns_l = defaultdict()
     ns_r = defaultdict()
@@ -162,21 +168,27 @@ def sankey(left, right, leftWeight=None, rightWeight=None, colorDict=None,
             myD['top'] = myD['bottom'] + myD['left']
             topEdge = myD['top']
         leftWidths[leftLabel] = myD
+        LOGGER.debug(f"Left position of '{leftLabel}' : {myD} ")
 
     # Determine positions of right label patches and total widths
     rightWidths = defaultdict()
     for i, rightLabel in enumerate(rightLabels):
+        LOGGER.debug(f"Handling {i}: {rightLabel}")
         myD = {}
         myD['right'] = dataFrame[dataFrame.right == rightLabel].rightWeight.sum()
         if i == 0:
             myD['bottom'] = 0
             myD['top'] = myD['right']
         else:
-            myD['bottom'] = rightWidths[rightLabels[i - 1]]['top'] + 0.02 * dataFrame.rightWeight.sum()
+            bottomWidth = rightWidths[rightLabels[i - 1]]['top']
+            # LOGGER.debug(f"Calculating weightedSum for '{rightLabel}' from {dataFrame.rightWeight}")
+            weightedSum = 0.02 * dataFrame.rightWeight.sum()
+            # LOGGER.debug(f"weightedSum = '{weightedSum}'")
+            myD['bottom'] = bottomWidth + weightedSum
             myD['top'] = myD['bottom'] + myD['right']
             topEdge = myD['top']
         rightWidths[rightLabel] = myD
-
+        LOGGER.debug(f"Right position of '{rightLabel}' : {myD} ")
     # Total vertical extent of diagram
     xMax = topEdge / aspect
 
@@ -239,6 +251,8 @@ def sankey(left, right, leftWeight=None, rightWeight=None, colorDict=None,
         plt.gca().set_title(title)
     plt.gcf().set_size_inches(6, 6)
     if figureName != None:
-        plt.savefig("{}.png".format(figureName), bbox_inches='tight', dpi=150)
+        fileName = "{}.png".format(figureName)
+        plt.savefig(fileName, bbox_inches='tight', dpi=150)
+        LOGGER.info(f"Sankey diagram generated in '{fileName}'")
     if closePlot:
         plt.close()
