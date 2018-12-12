@@ -21,7 +21,7 @@ setuptools.setup(
     install_requires=require,
     classifiers=(
         "Programming Language :: Python :: 3",
-        'LICENSE :: OSI APPROVED :: GNU AFFERO GENERAL PUBLIC LICENSE V3',
+        'License :: OSI Approved :: GNU Affero General Public License v3',
         "Operating System :: OS Independent",
     ),
 )
