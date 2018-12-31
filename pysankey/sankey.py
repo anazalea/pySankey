@@ -79,6 +79,7 @@ def sankey(
     fontsize=14,
     figureName=None,
     closePlot=False,
+    figSize=(6, 6),
 ):
     """
     Make Sankey Diagram showing flow from left-->right
@@ -99,6 +100,8 @@ def sankey(
         aspect = vertical extent of the diagram in units of horizontal extent
         rightColor = If true, each strip in the diagram will be be colored
                     according to its left label
+        figSize = tuple setting the width and height of the sankey diagram.
+            Defaults to (6, 6)
     Ouput:
         None
     """
@@ -300,7 +303,7 @@ def sankey(
                     color=colorDict[labelColor],
                 )
     plt.gca().axis("off")
-    plt.gcf().set_size_inches(6, 6)
+    plt.gcf().set_size_inches(figSize)
     if figureName != None:
         fileName = "{}.png".format(figureName)
         plt.savefig(fileName, bbox_inches="tight", dpi=150)
