@@ -96,16 +96,19 @@ colorDict = {
     'blueberry':'#1b7ef7',
     'banana':'#f3f71b',
     'lime':'#12e23f',
-    'orange':'#f78c1b'
+    'orange':'#f78c1b',
+    'kiwi':'#9BD937'
 }
 sankey(
     df['true'], df['predicted'], aspect=20, colorDict=colorDict,
+    leftLabels=['banana','orange','blueberry','apple','lime'],
+    rightLabels=['orange','banana','blueberry','apple','lime','kiwi'],
     fontsize=12, figureName="fruit"
 )
 # Result is in "fruit.png"
 ```
 
-![Fruity Alchemy](pysankey/fruits.png)
+![Fruity Alchemy](pysankey/fruit.png)
 
 You could also use weight:
 
