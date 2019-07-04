@@ -20,6 +20,5 @@ class TestFruit(GenericTest):
             "banana": "#f3f71b",
             "lime": "#12e23f",
             "orange": "#f78c1b",
-            'kiwi':'#9BD937'            
-}
+            "kiwi": "#9BD937",
         }

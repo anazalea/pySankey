@@ -20,4 +20,4 @@ class TestErrorCase(TestFruit):
                 fontsize=12,
                 figureName=self.figure_name,
             )
-        self.assertIn(": blueberry, lime, banana", str(value_error.exception))
+        self.assertIn(": lime, blueberry, banana, kiwi", str(value_error.exception))
