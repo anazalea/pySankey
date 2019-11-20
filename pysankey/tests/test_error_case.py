@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from pysankey import sankey
-from pysankey.tests.test_fruit import TestFruit
+from pysankey import LabelMismatch, NullsInFrame
+from pysankey.tests.generic_test import TestFruit
 
 
 class TestErrorCase(TestFruit):
@@ -15,9 +16,18 @@ class TestErrorCase(TestFruit):
             sankey(
                 self.data["true"],
                 self.data["predicted"],
-                aspect=20,
-                colorDict=bad_color_dict,
-                fontsize=12,
-                figureName=self.figure_name,
+                colorDict=bad_color_dict
             )
         self.assertIn(": lime, blueberry, banana, kiwi", str(value_error.exception))
+
+    def test_label_mismatch(self):
+        """ sankey raises a LabelMismatch when data doesn't match the labels"""
+        with self.assertRaises(LabelMismatch):
+            sankey(self.data['true'], self.data['predicted'],
+                   leftLabels=['banana', 'orange', 'blueberry', 'apple', 'lime'],
+                   rightLabels=['orange', 'banana', 'blueberry', 'apple'])
+
+    def test_nulls_in_frame(self):
+        """ sankey raises a NullsInFrame when left or right data is null"""
+        with self.assertRaises(NullsInFrame):
+            sankey([None], self.data['predicted'])
