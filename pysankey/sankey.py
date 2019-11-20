@@ -17,11 +17,9 @@ Produces simple Sankey Diagrams with matplotlib.
 """
 
 # fmt: off
+import warnings
 import logging
 from collections import defaultdict
-
-import matplotlib
-matplotlib.use('Agg')
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -48,6 +46,9 @@ class LabelMismatch(PySankeyException):
 
 
 def check_data_matches_labels(labels, data, side):
+    """Check wether or not data matches labels.
+
+    Raise a LabelMismatch Exception if not."""
     if len(labels) > 0:
         if isinstance(data, list):
             data = set(data)
@@ -79,7 +80,8 @@ def sankey(
     fontsize=14,
     figureName=None,
     closePlot=False,
-    figSize=(6, 6),
+    figSize=None,
+    ax=None
 ):
     """
     Make Sankey Diagram showing flow from left-->right
@@ -101,10 +103,34 @@ def sankey(
         rightColor = If true, each strip in the diagram will be be colored
                     according to its left label
         figSize = tuple setting the width and height of the sankey diagram.
-            Defaults to (6, 6)
+            Defaults to current figure size
+        ax = optional, matplotlib axes to plot on, otherwise uses current axes.
     Ouput:
-        None
+        ax : matplotlib Axes
     """
+    warn = []
+    if figureName is not None:
+        msg = "use of figureName in sankey() is deprecated"
+        warnings.warn(msg, DeprecationWarning)
+        warn.append(msg[7:-14])
+    if closePlot is not False:
+        msg = "use of closePlot in sankey() is deprecated"
+        warnings.warn(msg, DeprecationWarning)
+        warn.append(msg[7:-14])
+    if figSize is not None:
+        msg = "use of figSize in sankey() is deprecated"
+        warnings.warn(msg, DeprecationWarning)
+        warn.append(msg[7:-14])
+
+    if warn:
+        LOGGER.warning(
+            " The following arguments are deprecated and should be removed: %s",
+            ", ".join(warn)
+        )
+
+    if ax is None:
+        ax = plt.gca()
+
     if leftWeight is None:
         leftWeight = []
     if rightWeight is None:
@@ -120,7 +146,6 @@ def sankey(
     if len(rightWeight) == 0:
         rightWeight = leftWeight
 
-    plt.figure()
     plt.rc("text", usetex=False)
     plt.rc("font", family="serif")
 
@@ -136,7 +161,7 @@ def sankey(
             "leftWeight": leftWeight,
             "rightWeight": rightWeight,
         },
-        index=range(len(left)),
+        index=range(len(left))
     )
 
     if len(dataFrame[(dataFrame.left.isnull()) | (dataFrame.right.isnull())]):
@@ -232,14 +257,14 @@ def sankey(
 
     # Draw vertical bars on left and right of each  label's section & print label
     for leftLabel in leftLabels:
-        plt.fill_between(
+        ax.fill_between(
             [-0.02 * xMax, 0],
             2 * [leftWidths[leftLabel]["bottom"]],
             2 * [leftWidths[leftLabel]["bottom"] + leftWidths[leftLabel]["left"]],
             color=colorDict[leftLabel],
             alpha=0.99,
         )
-        plt.text(
+        ax.text(
             -0.05 * xMax,
             leftWidths[leftLabel]["bottom"] + 0.5 * leftWidths[leftLabel]["left"],
             leftLabel,
@@ -247,14 +272,14 @@ def sankey(
             fontsize=fontsize,
         )
     for rightLabel in rightLabels:
-        plt.fill_between(
+        ax.fill_between(
             [xMax, 1.02 * xMax],
             2 * [rightWidths[rightLabel]["bottom"]],
             2 * [rightWidths[rightLabel]["bottom"] + rightWidths[rightLabel]["right"]],
             color=colorDict[rightLabel],
             alpha=0.99,
         )
-        plt.text(
+        ax.text(
             1.05 * xMax,
             rightWidths[rightLabel]["bottom"] + 0.5 * rightWidths[rightLabel]["right"],
             rightLabel,
@@ -295,18 +320,23 @@ def sankey(
                 # Update bottom edges at each label so next strip starts at the right place
                 leftWidths[leftLabel]["bottom"] += ns_l[leftLabel][rightLabel]
                 rightWidths[rightLabel]["bottom"] += ns_r[leftLabel][rightLabel]
-                plt.fill_between(
+                ax.fill_between(
                     np.linspace(0, xMax, len(ys_d)),
                     ys_d,
                     ys_u,
                     alpha=0.65,
                     color=colorDict[labelColor],
                 )
-    plt.gca().axis("off")
-    plt.gcf().set_size_inches(figSize)
-    if figureName != None:
+    ax.axis("off")
+
+    if figSize is not None:
+        plt.gcf().set_size_inches(figSize)
+
+    if figureName is not None:
         fileName = "{}.png".format(figureName)
         plt.savefig(fileName, bbox_inches="tight", dpi=150)
         LOGGER.info(f"Sankey diagram generated in '{fileName}'")
     if closePlot:
         plt.close()
+
+    return ax
