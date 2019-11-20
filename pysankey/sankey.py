@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
+r"""
 Produces simple Sankey Diagrams with matplotlib.
 @author: Anneya Golob & marcomanz & pierre-sassoulas & jorwoods
                       .-.
@@ -28,13 +28,10 @@ import seaborn as sns
 # fmt: on
 
 LOGGER = logging.getLogger(__name__)
-logging.basicConfig(level=logging.WARN)
 
 
 class PySankeyException(Exception):
     """ Generic PySankey Exception. """
-
-    pass
 
 
 class NullsInFrame(PySankeyException):
@@ -68,20 +65,20 @@ def check_data_matches_labels(labels, data, side):
 
 
 def sankey(
-    left,
-    right,
-    leftWeight=None,
-    rightWeight=None,
-    colorDict=None,
-    leftLabels=None,
-    rightLabels=None,
-    aspect=4,
-    rightColor=False,
-    fontsize=14,
-    figureName=None,
-    closePlot=False,
-    figSize=None,
-    ax=None
+        left,
+        right,
+        leftWeight=None,
+        rightWeight=None,
+        colorDict=None,
+        leftLabels=None,
+        rightLabels=None,
+        aspect=4,
+        rightColor=False,
+        fontsize=14,
+        figureName=None,
+        closePlot=False,
+        figSize=None,
+        ax=None
 ):
     """
     Make Sankey Diagram showing flow from left-->right
@@ -171,7 +168,7 @@ def sankey(
     allLabels = pd.Series(
         np.r_[dataFrame.left.unique(), dataFrame.right.unique()]
     ).unique()
-    LOGGER.debug(f"Labels to handle : {allLabels}")
+    LOGGER.debug("Labels to handle : %s", allLabels)
 
     # Identify left labels
     if len(leftLabels) == 0:
@@ -184,6 +181,7 @@ def sankey(
         rightLabels = pd.Series(dataFrame.right.unique()).unique()
     else:
         check_data_matches_labels(rightLabels, dataFrame["right"], "right")
+
     # If no colorDict given, make one
     if colorDict is None:
         colorDict = {}
@@ -199,7 +197,8 @@ def sankey(
             )
             msg += "{}".format(", ".join(missing))
             raise ValueError(msg)
-    LOGGER.debug(f"The colordict value are : {colorDict}")
+    LOGGER.debug("The colordict value are : %s", colorDict)
+
     # Determine widths of individual strips
     ns_l = defaultdict()
     ns_r = defaultdict()
@@ -217,41 +216,13 @@ def sankey(
         ns_r[leftLabel] = rightDict
 
     # Determine positions of left label patches and total widths
-    leftWidths = defaultdict()
-    for i, leftLabel in enumerate(leftLabels):
-        myD = {}
-        myD["left"] = dataFrame[dataFrame.left == leftLabel].leftWeight.sum()
-        if i == 0:
-            myD["bottom"] = 0
-            myD["top"] = myD["left"]
-        else:
-            myD["bottom"] = (
-                leftWidths[leftLabels[i - 1]]["top"] + 0.02 * dataFrame.leftWeight.sum()
-            )
-            myD["top"] = myD["bottom"] + myD["left"]
-            topEdge = myD["top"]
-        leftWidths[leftLabel] = myD
-        LOGGER.debug(f"Left position of '{leftLabel}' : {myD} ")
+    leftWidths, topEdge = _get_positions_and_total_widths(
+        dataFrame, leftLabels, 'left')
 
     # Determine positions of right label patches and total widths
-    rightWidths = defaultdict()
-    for i, rightLabel in enumerate(rightLabels):
-        LOGGER.debug(f"Handling {i}: {rightLabel}")
-        myD = {}
-        myD["right"] = dataFrame[dataFrame.right == rightLabel].rightWeight.sum()
-        if i == 0:
-            myD["bottom"] = 0
-            myD["top"] = myD["right"]
-        else:
-            bottomWidth = rightWidths[rightLabels[i - 1]]["top"]
-            # LOGGER.debug(f"Calculating weightedSum for '{rightLabel}' from {dataFrame.rightWeight}")
-            weightedSum = 0.02 * dataFrame.rightWeight.sum()
-            # LOGGER.debug(f"weightedSum = '{weightedSum}'")
-            myD["bottom"] = bottomWidth + weightedSum
-            myD["top"] = myD["bottom"] + myD["right"]
-            topEdge = myD["top"]
-        rightWidths[rightLabel] = myD
-        LOGGER.debug(f"Right position of '{rightLabel}' : {myD} ")
+    rightWidths, topEdge = _get_positions_and_total_widths(
+        dataFrame, rightLabels, 'right')
+
     # Total vertical extent of diagram
     xMax = topEdge / aspect
 
@@ -335,8 +306,29 @@ def sankey(
     if figureName is not None:
         fileName = "{}.png".format(figureName)
         plt.savefig(fileName, bbox_inches="tight", dpi=150)
-        LOGGER.info(f"Sankey diagram generated in '{fileName}'")
+        LOGGER.info("Sankey diagram generated in '%s'", fileName)
     if closePlot:
         plt.close()
 
     return ax
+
+
+def _get_positions_and_total_widths(df, labels, side):
+    """ Determine positions of label patches and total widths"""
+    widths = defaultdict()
+    for i, label in enumerate(labels):
+        labelWidths = {}
+        labelWidths[side] = df[df[side] == label][side + "Weight"].sum()
+        if i == 0:
+            labelWidths["bottom"] = 0
+            labelWidths["top"] = labelWidths[side]
+        else:
+            bottomWidth = widths[labels[i - 1]]["top"]
+            weightedSum = 0.02 * df[side + "Weight"].sum()
+            labelWidths["bottom"] = bottomWidth + weightedSum
+            labelWidths["top"] = labelWidths["bottom"] + labelWidths[side]
+            topEdge = labelWidths["top"]
+        widths[label] = labelWidths
+        LOGGER.debug("%s position of '%s' : %s", side, label, labelWidths)
+
+    return widths, topEdge
