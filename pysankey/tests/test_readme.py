@@ -16,7 +16,7 @@ class TestReadmeFruit(TestFruit):
             self.data["predicted"],
             aspect=20,
             colorDict=self.colorDict,
-            fontsize=12
+            fontsize=12,
         )
         self.assertIsInstance(ax, plt.Axes)
 
@@ -33,6 +33,6 @@ class TestReadmeCustomerGood(TestCustomerGood):
             rightWeight=weight,
             leftWeight=weight,
             aspect=20,
-            fontsize=10
+            fontsize=10,
         )
         self.assertIsInstance(ax, plt.Axes)

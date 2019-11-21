@@ -15,18 +15,24 @@ class TestErrorCase(TestFruit):
         """ Test if deprecation warnings are correctly triggered """
         with self.assertWarns(DeprecationWarning):
             sankey(
-                self.data["true"], self.data["predicted"],
-                colorDict=self.colorDict, figureName=self.figure_name
+                self.data["true"],
+                self.data["predicted"],
+                colorDict=self.colorDict,
+                figureName=self.figure_name,
             )
 
         with self.assertWarns(DeprecationWarning):
             sankey(
-                self.data["true"], self.data["predicted"],
-                colorDict=self.colorDict, closePlot=True
+                self.data["true"],
+                self.data["predicted"],
+                colorDict=self.colorDict,
+                closePlot=True,
             )
 
         with self.assertWarns(DeprecationWarning):
             sankey(
-                self.data["true"], self.data["predicted"],
-                colorDict=self.colorDict, figSize=(8, 8)
+                self.data["true"],
+                self.data["predicted"],
+                colorDict=self.colorDict,
+                figSize=(8, 8),
             )

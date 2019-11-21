@@ -65,20 +65,20 @@ def check_data_matches_labels(labels, data, side):
 
 
 def sankey(
-        left,
-        right,
-        leftWeight=None,
-        rightWeight=None,
-        colorDict=None,
-        leftLabels=None,
-        rightLabels=None,
-        aspect=4,
-        rightColor=False,
-        fontsize=14,
-        figureName=None,
-        closePlot=False,
-        figSize=None,
-        ax=None
+    left,
+    right,
+    leftWeight=None,
+    rightWeight=None,
+    colorDict=None,
+    leftLabels=None,
+    rightLabels=None,
+    aspect=4,
+    rightColor=False,
+    fontsize=14,
+    figureName=None,
+    closePlot=False,
+    figSize=None,
+    ax=None,
 ):
     """
     Make Sankey Diagram showing flow from left-->right
@@ -122,7 +122,7 @@ def sankey(
     if warn:
         LOGGER.warning(
             " The following arguments are deprecated and should be removed: %s",
-            ", ".join(warn)
+            ", ".join(warn),
         )
 
     if ax is None:
@@ -158,7 +158,7 @@ def sankey(
             "leftWeight": leftWeight,
             "rightWeight": rightWeight,
         },
-        index=range(len(left))
+        index=range(len(left)),
     )
 
     if len(dataFrame[(dataFrame.left.isnull()) | (dataFrame.right.isnull())]):
@@ -216,12 +216,12 @@ def sankey(
         ns_r[leftLabel] = rightDict
 
     # Determine positions of left label patches and total widths
-    leftWidths, topEdge = _get_positions_and_total_widths(
-        dataFrame, leftLabels, 'left')
+    leftWidths, topEdge = _get_positions_and_total_widths(dataFrame, leftLabels, "left")
 
     # Determine positions of right label patches and total widths
     rightWidths, topEdge = _get_positions_and_total_widths(
-        dataFrame, rightLabels, 'right')
+        dataFrame, rightLabels, "right"
+    )
 
     # Total vertical extent of diagram
     xMax = topEdge / aspect

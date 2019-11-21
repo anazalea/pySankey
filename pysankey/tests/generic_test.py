@@ -15,9 +15,9 @@ class GenericTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.figure_name = ''
-        cls.data = ''
-        cls.colorDict = ''
+        cls.figure_name = ""
+        cls.data = ""
+        cls.colorDict = ""
 
     def tearDown(self):
         path = "{}.png".format(self.figure_name)
@@ -43,6 +43,7 @@ class TestFruit(GenericTest):
             "orange": "#f78c1b",
             "kiwi": "#9BD937",
         }
+
 
 class TestCustomerGood(GenericTest):
 
