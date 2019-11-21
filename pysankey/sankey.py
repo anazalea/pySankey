@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 r"""
 Produces simple Sankey Diagrams with matplotlib.
-@author: Anneya Golob & marcomanz & pierre-sassoulas & jorwoods
+@author: Anneya Golob & marcomanz & pierre-sassoulas & jorwoods & vgalisson
                       .-.
                  .--.(   ).--.
       <-.  .-.-.(.->          )_  .--.
