@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
- @author : vgalisson
-"""
 
 import matplotlib.pyplot as plt
 
