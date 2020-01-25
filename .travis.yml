@@ -20,8 +20,6 @@ jobs:
         - python -m pip install --upgrade pip
       env: PATH=/c/Python38:/c/Python38/Scripts:$PATH
 
-before_install:
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; sudo apt-get install -y python-tk python3-tk; fi
 install:
   - pip install -e ".[test]"
 script:

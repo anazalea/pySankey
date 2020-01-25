@@ -9,10 +9,6 @@ Sankey diagrams</a> flowing only from left to right.
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-## Requirements
-
-Requires `python-tk` (for python 2.7) or `python3-tk` (for python 3.x) install with `apt-get` or your package manager.
-
 ## Example
 
 With fruits.txt :
