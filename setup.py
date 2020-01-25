@@ -7,7 +7,7 @@ TEST_REQUIRES = ["pylint", "coverage", "coveralls"]
 
 setuptools.setup(
     name="pySankeyBeta",
-    version="1.2.0",
+    version="1.2.1",
     author="pierre-sassoulas",
     author_email="pierre.sassoulas@gmail.com",
     description="Make simple, pretty Sankey Diagrams (Beta version)",
