@@ -43,7 +43,7 @@ class LabelMismatch(PySankeyException):
 
 
 def check_data_matches_labels(labels, data, side):
-    """Check wether or not data matches labels.
+    """Check whether or not data matches labels.
 
     Raise a LabelMismatch Exception if not."""
     if len(labels) > 0:
@@ -102,7 +102,7 @@ def sankey(
         figSize = tuple setting the width and height of the sankey diagram.
             Defaults to current figure size
         ax = optional, matplotlib axes to plot on, otherwise uses current axes.
-    Ouput:
+    Output:
         ax : matplotlib Axes
     """
     warn = []
