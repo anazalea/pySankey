@@ -21,7 +21,7 @@ jobs:
       env: PATH=/c/Python38:/c/Python38/Scripts:$PATH
 
 install:
-  - pip install -e ".[test]"
+  - pip3 install -e ".[test]"
 script:
   - python -m unittest
 after_success:
