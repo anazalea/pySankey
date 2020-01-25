@@ -13,12 +13,6 @@ Sankey diagrams</a> flowing only from left to right.
 
 Requires python-tk (for python 2.7) or python3-tk (for python 3.x) install with `apt-get` or your package manager.
 
-You can install the other requirements with:
-
-``` bash
-    pip install -r requirements.txt
-```
-
 ## Example
 
 With fruits.txt :
@@ -200,6 +194,8 @@ Then they can choose what to do with it - showing it, saving it with much more f
   ```
 
 ## Package development
+
+    pip3 install -e ".[test]"
 
 ### Lint
 

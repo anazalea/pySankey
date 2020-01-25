@@ -7,6 +7,11 @@ python:
 before_install:
   - sudo apt-get install -y python-tk
   - sudo apt-get install -y python3-tk
-install: pip install -r requirements_dev.txt
-script: python -m unittest
-after_success: coverage run --source=pysankey --omit=pysankey/tests/* -m unittest;coverage html;coveralls
+install:
+  - pip install -e ".[test]"
+script:
+  - python -m unittest
+after_success:
+  - coverage run --source=pysankey --omit=pysankey/tests/* -m unittest
+  - coverage html
+  - coveralls

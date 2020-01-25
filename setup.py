@@ -3,13 +3,11 @@ import setuptools
 with open("README.md", "r", encoding="UTF-8") as fh:
     long_description = fh.read()
 
-with open("requirements.txt", "r", encoding="UTF-8") as fh:
-    require = fh.readlines()
-require = [x.strip() for x in require]
+TEST_REQUIRES = ["pylint", "coverage", "coveralls"]
 
 setuptools.setup(
     name="pySankeyBeta",
-    version="1.1.0",
+    version="1.2.0",
     author="pierre-sassoulas",
     author_email="pierre.sassoulas@gmail.com",
     description="Make simple, pretty Sankey Diagrams (Beta version)",
@@ -18,7 +16,9 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/pierre-sassoulas/pySankey",
     packages=setuptools.find_packages(),
-    install_requires=require,
+    install_requires=["matplotlib>=2.1.0rc1", "seaborn>=0.8.1", "numpy>=1.13.3"],
+    test_requires=TEST_REQUIRES,
+    extras_require={"test": TEST_REQUIRES},
     classifiers=(
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
