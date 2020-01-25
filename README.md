@@ -11,7 +11,7 @@ Sankey diagrams</a> flowing only from left to right.
 
 ## Requirements
 
-Requires python-tk (for python 2.7) or python3-tk (for python 3.x) install with `apt-get` or your package manager.
+Requires `python-tk` (for python 2.7) or `python3-tk` (for python 3.x) install with `apt-get` or your package manager.
 
 ## Example
 
