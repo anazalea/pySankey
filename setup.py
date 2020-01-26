@@ -7,7 +7,7 @@ TEST_REQUIRES = ["pylint", "coverage", "coveralls"]
 
 setuptools.setup(
     name="pySankeyBeta",
-    version="1.2.1",
+    version="1.2.2",
     author="pierre-sassoulas",
     author_email="pierre.sassoulas@gmail.com",
     description="Make simple, pretty Sankey Diagrams (Beta version)",
@@ -22,6 +22,7 @@ setuptools.setup(
     classifiers=(
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "License :: OSI Approved :: GNU Affero General Public License v3",
         "Operating System :: OS Independent",
     ),
