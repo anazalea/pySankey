@@ -322,6 +322,7 @@ def _get_positions_and_total_widths(df, labels, side):
         if i == 0:
             labelWidths["bottom"] = 0
             labelWidths["top"] = labelWidths[side]
+            
         else:
             bottomWidth = widths[labels[i - 1]]["top"]
             weightedSum = 0.02 * df[side + "Weight"].sum()
@@ -330,5 +331,6 @@ def _get_positions_and_total_widths(df, labels, side):
             topEdge = labelWidths["top"]
         widths[label] = labelWidths
         LOGGER.debug("%s position of '%s' : %s", side, label, labelWidths)
-
+    if len(labels) == 1:
+        topEdge = topEdge = labelWidths["top"]
     return widths, topEdge
