@@ -110,3 +110,4 @@ venv.bak/
 .mypy_cache/
 *.png
 pysankey/nuts.csv
+pysankey/nuts.csv
