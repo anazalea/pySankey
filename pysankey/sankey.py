@@ -333,4 +333,5 @@ def _get_positions_and_total_widths(df, labels, side):
         LOGGER.debug("%s position of '%s' : %s", side, label, labelWidths)
     if len(labels) == 1:
         topEdge = topEdge = labelWidths["top"]
+
     return widths, topEdge
