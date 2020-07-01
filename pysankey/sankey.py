@@ -17,9 +17,7 @@ Produces simple Sankey Diagrams with matplotlib.
 """
 
 from collections import defaultdict
-
-import matplotlib
-matplotlib.use('Agg')
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -39,7 +37,7 @@ class LabelMismatch(PySankeyException):
 
 
 def check_data_matches_labels(labels, data, side):
-    if len(labels > 0):
+    if len(labels) > 0:
         if isinstance(data, list):
             data = set(data)
         if isinstance(data, pd.Series):
@@ -55,9 +53,15 @@ def check_data_matches_labels(labels, data, side):
             raise LabelMismatch('{0} labels and data do not match.{1}'.format(side, msg))
 
 
+def colorFader(c1,c2,mix=0): #fade (linear interpolate) from color c1 (at mix=0) to c2 (mix=1)
+    c1=np.array(mpl.colors.to_rgb(c1))
+    c2=np.array(mpl.colors.to_rgb(c2))
+    return mpl.colors.to_hex((1-mix)*c1 + mix*c2)
+
+
 def sankey(left, right, leftWeight=None, rightWeight=None, colorDict=None,
            leftLabels=None, rightLabels=None, aspect=4, rightColor=False,
-           fontsize=14, figureName=None, closePlot=False):
+           fontsize=14, figureName=None, closePlot=False, fig=None, color_range=None):
     '''
     Make Sankey Diagram showing flow from left-->right
 
@@ -95,9 +99,8 @@ def sankey(left, right, leftWeight=None, rightWeight=None, colorDict=None,
     if len(rightWeight) == 0:
         rightWeight = leftWeight
 
-    plt.figure()
-    plt.rc('text', usetex=False)
-    plt.rc('font', family='serif')
+    if not fig:
+        plt.figure()
 
     # Create Dataframe
     if isinstance(left, pd.Series):
@@ -221,22 +224,36 @@ def sankey(left, right, leftWeight=None, rightWeight=None, colorDict=None,
             if len(dataFrame[(dataFrame.left == leftLabel) & (dataFrame.right == rightLabel)]) > 0:
                 # Create array of y values for each strip, half at left value,
                 # half at right, convolve
-                ys_d = np.array(50 * [leftWidths[leftLabel]['bottom']] + 50 * [rightWidths[rightLabel]['bottom']])
-                ys_d = np.convolve(ys_d, 0.05 * np.ones(20), mode='valid')
-                ys_d = np.convolve(ys_d, 0.05 * np.ones(20), mode='valid')
-                ys_u = np.array(50 * [leftWidths[leftLabel]['bottom'] + ns_l[leftLabel][rightLabel]] + 50 * [rightWidths[rightLabel]['bottom'] + ns_r[leftLabel][rightLabel]])
-                ys_u = np.convolve(ys_u, 0.05 * np.ones(20), mode='valid')
-                ys_u = np.convolve(ys_u, 0.05 * np.ones(20), mode='valid')
+                reso = 10
+                ys_d = np.array((5 * reso) * [leftWidths[leftLabel]['bottom']] +
+                                (5 * reso) * [rightWidths[rightLabel]['bottom']])
+                ys_d = np.convolve(ys_d, (0.005 * reso) * np.ones(20), mode='valid')
+                ys_d = np.convolve(ys_d, (0.005 * reso) * np.ones(20), mode='valid')
+                ys_u = np.array((5 * reso) * [leftWidths[leftLabel]['bottom'] + ns_l[leftLabel][rightLabel]] +
+                                (5 * reso) * [rightWidths[rightLabel]['bottom'] + ns_r[leftLabel][rightLabel]])
+                ys_u = np.convolve(ys_u, (0.005 * reso) * np.ones(20), mode='valid')
+                ys_u = np.convolve(ys_u, (0.005 * reso) * np.ones(20), mode='valid')
 
                 # Update bottom edges at each label so next strip starts at the right place
                 leftWidths[leftLabel]['bottom'] += ns_l[leftLabel][rightLabel]
                 rightWidths[rightLabel]['bottom'] += ns_r[leftLabel][rightLabel]
-                plt.fill_between(
-                    np.linspace(0, xMax, len(ys_d)), ys_d, ys_u, alpha=0.65,
-                    color=colorDict[labelColor]
-                )
+                if color_range:
+                    subxMax = xMax / len(ys_d)
+                    for npos, pos in enumerate(np.linspace(0, xMax, len(ys_d)), 1):
+                        plt.fill_between(
+                            np.linspace(0, xMax, len(ys_d)), ys_d, ys_u, alpha=0.65, lw=0,
+                            where=[pos - 2 * subxMax <= i <= pos + subxMax for i in np.linspace(0, xMax, len(ys_d))],
+                            color=colorFader(colorDict[leftLabel], colorDict[rightLabel], npos / len(ys_d))
+                        )
+                else:
+                    plt.fill_between(
+                        np.linspace(0, xMax, len(ys_d)), ys_d, ys_u, alpha=0.65,
+                        color=colorDict[labelColor]
+                    )
+
     plt.gca().axis('off')
-    plt.gcf().set_size_inches(6, 6)
+    if not fig:
+        plt.gcf().set_size_inches(6, 6)
     if figureName != None:
         plt.savefig("{}.png".format(figureName), bbox_inches='tight', dpi=150)
     if closePlot:
