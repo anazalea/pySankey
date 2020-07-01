@@ -1,4 +1,3 @@
-
 """ Make simple, pretty Sankey Diagrams """
 
 from pysankey.sankey import sankey, PySankeyException, NullsInFrame, LabelMismatch
