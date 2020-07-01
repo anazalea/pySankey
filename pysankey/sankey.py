@@ -63,18 +63,13 @@ def check_data_matches_labels(labels, data, side):
             )
 
 
-def colorFader(c1,c2,mix=0): #fade (linear interpolate) from color c1 (at mix=0) to c2 (mix=1)
-    c1=np.array(mpl.colors.to_rgb(c1))
-    c2=np.array(mpl.colors.to_rgb(c2))
-    return mpl.colors.to_hex((1-mix)*c1 + mix*c2)
-
-
 def sankey(
     left,
     right,
     leftWeight=None,
     rightWeight=None,
     colorDict=None,
+    alphaDict=None,
     leftLabels=None,
     rightLabels=None,
     aspect=4,
@@ -205,6 +200,21 @@ def sankey(
             raise ValueError(msg)
     LOGGER.debug("The colordict value are : %s", colorDict)
 
+    # If no alphaDict given, make one
+    if alphaDict is None:
+        alphaDict = {}
+        for i, label in enumerate(allLabels):
+            alphaDict[label] = 0.65
+    else:
+        missing = [label for label in allLabels if label not in alphaDict.keys()]
+        if missing:
+            msg = (
+                "The alphaDict parameter is missing values for the following labels : "
+            )
+            msg += "{}".format(", ".join(missing))
+            raise ValueError(msg)
+    LOGGER.debug("The alphadict value are : %s", alphaDict)
+
     # Determine widths of individual strips
     ns_l = defaultdict()
     ns_r = defaultdict()
@@ -233,33 +243,33 @@ def sankey(
     xMax = topEdge / aspect
 
     # Draw vertical bars on left and right of each  label's section & print label
+    left_coords = []
     for leftLabel in leftLabels:
-        ax.fill_between(
-            [-0.02 * xMax, 0],
-            2 * [leftWidths[leftLabel]['bottom']],
-            2 * [leftWidths[leftLabel]['bottom'] + leftWidths[leftLabel]['left']],
-            color=colorDict[leftLabel],
-            alpha=0.99,
-        )
+        x1 = -0.02 * xMax
+        x2 = 0
+        y1 = 2 * [leftWidths[leftLabel]['bottom']]
+        y2 = 2 * [leftWidths[leftLabel]['bottom'] + leftWidths[leftLabel]['left']]
+        left_coords.append((x1, x2, y1, y2))
+        ax.fill_between((x1, x2), y1, y2, color=colorDict[leftLabel], alpha=0.99)
         ax.text(
             -0.05 * xMax,
             leftWidths[leftLabel]["bottom"] + 0.5 * leftWidths[leftLabel]["left"],
-            leftLabel,
+            leftLabel.strip(),
             {"ha": "right", "va": "center"},
             fontsize=fontsize,
         )
+    right_coords = []
     for rightLabel in rightLabels:
-        ax.fill_between(
-            [xMax, 1.02 * xMax],
-            2 * [rightWidths[rightLabel]["bottom"]],
-            2 * [rightWidths[rightLabel]["bottom"] + rightWidths[rightLabel]["right"]],
-            color=colorDict[rightLabel],
-            alpha=0.99,
-        )
+        x1 = xMax
+        x2 = 1.02 * xMax
+        y1 = 2 * [rightWidths[rightLabel]['bottom']]
+        y2 = 2 * [rightWidths[rightLabel]['bottom'] + rightWidths[rightLabel]['right']]
+        right_coords.append((x1, x2, y1, y2))
+        ax.fill_between((x1, x2), y1, y2, color=colorDict[rightLabel], alpha=0.99)
         ax.text(
             1.05 * xMax,
             rightWidths[rightLabel]["bottom"] + 0.5 * rightWidths[rightLabel]["right"],
-            rightLabel,
+            rightLabel.strip(),
             {"ha": "left", "va": "center"},
             fontsize=fontsize,
         )
@@ -298,24 +308,43 @@ def sankey(
                 leftWidths[leftLabel]['bottom'] += ns_l[leftLabel][rightLabel]
                 rightWidths[rightLabel]['bottom'] += ns_r[leftLabel][rightLabel]
                 if color_gradient:
-                    subxMax = xMax / len(ys_d)
-                    for npos, pos in enumerate(np.linspace(0, xMax, len(ys_d)), 1):
-                        if (leftLabel, rightLabel) in colorDict:
-                            color = colorDict[leftLabel, rightLabel]
-                        else:
-                            color = colorFader(colorDict[leftLabel], colorDict[rightLabel], npos / len(ys_d))
-                        plt.fill_between(
-                            np.linspace(0, xMax, len(ys_d)), ys_d, ys_u, alpha=0.65, lw=0,
-                            where=[pos - 2 * subxMax <= i <= pos + subxMax for i in np.linspace(0, xMax, len(ys_d))],
-                            color=color
-                        )
+                    if (leftLabel, rightLabel) in colorDict:
+                        cleft = cright = colorDict[leftLabel, rightLabel]
+                    else:
+                        cleft = colorDict[leftLabel]
+                        cright = colorDict[rightLabel]
+                    if (leftLabel, rightLabel) in alphaDict:
+                        alpha = alphaDict[leftLabel, rightLabel]
+                    else:
+                        alpha = alphaDict[labelColor]
+
+                    x = list(np.linspace(0, xMax, len(ys_d)))
+                    poly, = ax.fill(x + x[::-1] + [x[0]], list(ys_d) + list(ys_u)[::-1] + [ys_d[0]], facecolor='none')
+
+                    # get the extent of the axes
+                    xmin, xmax = ax.get_xlim()
+                    ymin, ymax = ax.get_ylim()
+
+                    # create a dummy image
+                    img_data = np.arange(xmin,xmax,(xmax-xmin) / 100.)
+                    img_data = img_data.reshape(img_data.size, 1).T
+
+                    # plot and clip the image
+                    im = ax.imshow(img_data, aspect='auto', origin='lower', cmap=mpl.colors.LinearSegmentedColormap.from_list(
+                        'custom', [cleft, cright]), alpha=alpha, extent=[xmin,xmax,ymin,ymax])
+
+                    im.set_clip_path(poly)
                 else:
                     if (leftLabel, rightLabel) in colorDict:
                         color = colorDict[leftLabel, rightLabel]
                     else:
                         color = colorDict[labelColor]
+                    if (leftLabel, rightLabel) in alphaDict:
+                        alpha = alphaDict[leftLabel, rightLabel]
+                    else:
+                        alpha = alphaDict[labelColor]
                     plt.fill_between(
-                        np.linspace(0, xMax, len(ys_d)), ys_d, ys_u, alpha=0.65,
+                        np.linspace(0, xMax, len(ys_d)), ys_d, ys_u, alpha=alpha,
                         color=color
                     )
 
@@ -326,12 +355,12 @@ def sankey(
 
     if figureName is not None:
         fileName = "{}.png".format(figureName)
-        plt.savefig(fileName, bbox_inches="tight", dpi=150)
+        plt.savefig(fileName, bbox_inches="tight", dpi=300)
         LOGGER.info("Sankey diagram generated in '%s'", fileName)
     if closePlot:
         plt.close()
 
-    return ax
+    return ax, left_coords, right_coords
 
 
 def _get_positions_and_total_widths(df, labels, side):
