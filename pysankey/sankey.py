@@ -144,9 +144,6 @@ def sankey(
     if len(rightWeight) == 0:
         rightWeight = leftWeight
 
-    plt.rc("text", usetex=False)
-    plt.rc("font", family="serif")
-
     # Create Dataframe
     if isinstance(left, pd.Series):
         left = left.reset_index(drop=True)
@@ -243,13 +240,13 @@ def sankey(
     xMax = topEdge / aspect
 
     # Draw vertical bars on left and right of each  label's section & print label
-    left_coords = []
+    left_coords = {}
     for leftLabel in leftLabels:
         x1 = -0.02 * xMax
         x2 = 0
         y1 = 2 * [leftWidths[leftLabel]['bottom']]
         y2 = 2 * [leftWidths[leftLabel]['bottom'] + leftWidths[leftLabel]['left']]
-        left_coords.append((x1, x2, y1, y2))
+        left_coords[leftLabel] = (x1, x2, y1[0], y2[0])
         ax.fill_between((x1, x2), y1, y2, color=colorDict[leftLabel], alpha=0.99)
         ax.text(
             -0.05 * xMax,
@@ -258,13 +255,13 @@ def sankey(
             {"ha": "right", "va": "center"},
             fontsize=fontsize,
         )
-    right_coords = []
+    right_coords = {}
     for rightLabel in rightLabels:
         x1 = xMax
         x2 = 1.02 * xMax
         y1 = 2 * [rightWidths[rightLabel]['bottom']]
         y2 = 2 * [rightWidths[rightLabel]['bottom'] + rightWidths[rightLabel]['right']]
-        right_coords.append((x1, x2, y1, y2))
+        right_coords[rightLabel] = (x1, x2, y1[0], y2[0])
         ax.fill_between((x1, x2), y1, y2, color=colorDict[rightLabel], alpha=0.99)
         ax.text(
             1.05 * xMax,
