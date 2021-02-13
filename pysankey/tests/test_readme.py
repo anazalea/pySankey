@@ -3,7 +3,7 @@
 import matplotlib.pyplot as plt
 
 from pysankey import sankey
-from pysankey.tests.generic_test import TestFruit, TestCustomerGood
+from pysankey.tests.generic_test import TestCustomerGood, TestFruit
 
 
 class TestReadmeFruit(TestFruit):

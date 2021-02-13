@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from pysankey import sankey
-from pysankey import LabelMismatch, NullsInFrame
+from pysankey import LabelMismatch, NullsInFrame, sankey
 from pysankey.tests.generic_test import TestFruit
 
 

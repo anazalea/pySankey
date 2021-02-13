@@ -16,16 +16,14 @@ Produces simple Sankey Diagrams with matplotlib.
                 '  |   '   |
 """
 
-# fmt: off
-import warnings
 import logging
+import warnings
 from collections import defaultdict
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-# fmt: on
 
 LOGGER = logging.getLogger(__name__)
 
