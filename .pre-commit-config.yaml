@@ -1,4 +1,14 @@
 repos:
+-   repo: https://github.com/myint/autoflake
+    rev: v1.4
+    hooks:
+    -   id: autoflake
+        args:
+            - --in-place
+            - --remove-all-unused-imports
+            - --expand-star-imports
+            - --remove-duplicate-keys
+            - --remove-unused-variables
 -   repo: https://github.com/ambv/black
     rev: 20.8b1
     hooks:
