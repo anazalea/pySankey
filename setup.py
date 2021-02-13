@@ -3,11 +3,11 @@ import setuptools
 with open("README.md", "r", encoding="UTF-8") as fh:
     long_description = fh.read()
 
-TEST_REQUIRES = ["pylint", "coverage", "coveralls"]
+TEST_REQUIRES = ["pylint", "coverage", "coveralls", "pre-commit"]
 
 setuptools.setup(
     name="pySankeyBeta",
-    version="1.2.2",
+    version="1.3.0",
     author="pierre-sassoulas",
     author_email="pierre.sassoulas@gmail.com",
     description="Make simple, pretty Sankey Diagrams (Beta version)",
