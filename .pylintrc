@@ -4,4 +4,4 @@ good-names=i,j,k
 variable-naming-style=camelCase
 argument-naming-style=camelCase
 
-disable=len-as-condition
+disable=len-as-condition, missing-docstring, invalid-name, too-many-arguments, too-many-locals
