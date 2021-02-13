@@ -22,7 +22,6 @@ setuptools.setup(
         "numpy>=1.16.5",
         "pandas",
     ],
-    test_requires=TEST_REQUIRES,
     extras_require={"test": TEST_REQUIRES},
     classifiers=(
         "Programming Language :: Python :: 3.6",
