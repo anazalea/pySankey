@@ -19,7 +19,7 @@ setuptools.setup(
     install_requires=[
         "matplotlib>=2.1.0rc1",
         "seaborn>=0.8.1",
-        "numpy>=1.13.3",
+        "numpy>=1.16.5",
         "pandas",
     ],
     test_requires=TEST_REQUIRES,
