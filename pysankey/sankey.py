@@ -103,6 +103,112 @@ def sankey(
     Output:
         ax : matplotlib Axes
     """
+    ax, leftLabels, leftWeight, rightLabels, rightWeight = init_values(
+        ax,
+        closePlot,
+        figSize,
+        figureName,
+        left,
+        leftLabels,
+        leftWeight,
+        rightLabels,
+        rightWeight,
+    )
+    plt.rc("text", usetex=False)
+    plt.rc("font", family="serif")
+    dataFrame = create_datadrame(left, leftWeight, right, rightWeight)
+    # Identify all labels that appear 'left' or 'right'
+    allLabels = pd.Series(
+        np.r_[dataFrame.left.unique(), dataFrame.right.unique()]
+    ).unique()
+    LOGGER.debug("Labels to handle : %s", allLabels)
+    leftLabels, rightLabels = identify_labels(dataFrame, leftLabels, rightLabels)
+    colorDict = create_colors(allLabels, colorDict)
+    ns_l, ns_r = determine_widths(dataFrame, leftLabels, rightLabels)
+    # Determine positions of left label patches and total widths
+    leftWidths, topEdge = _get_positions_and_total_widths(dataFrame, leftLabels, "left")
+    # Determine positions of right label patches and total widths
+    rightWidths, topEdge = _get_positions_and_total_widths(
+        dataFrame, rightLabels, "right"
+    )
+    # Total vertical extent of diagram
+    xMax = topEdge / aspect
+    draw_vertical_bars(
+        ax, colorDict, fontsize, leftLabels, leftWidths, rightLabels, rightWidths, xMax
+    )
+    plot_strips(
+        ax,
+        colorDict,
+        dataFrame,
+        leftLabels,
+        leftWidths,
+        ns_l,
+        ns_r,
+        rightColor,
+        rightLabels,
+        rightWidths,
+        xMax,
+    )
+    if figSize is not None:
+        plt.gcf().set_size_inches(figSize)
+    save_image(figureName)
+    if closePlot:
+        plt.close()
+    return ax
+
+
+def save_image(figureName):
+    if figureName is not None:
+        fileName = "{}.png".format(figureName)
+        plt.savefig(fileName, bbox_inches="tight", dpi=150)
+        LOGGER.info("Sankey diagram generated in '%s'", fileName)
+
+
+def identify_labels(dataFrame, leftLabels, rightLabels):
+    # Identify left labels
+    if len(leftLabels) == 0:
+        leftLabels = pd.Series(dataFrame.left.unique()).unique()
+    else:
+        check_data_matches_labels(leftLabels, dataFrame["left"], "left")
+    # Identify right labels
+    if len(rightLabels) == 0:
+        rightLabels = pd.Series(dataFrame.right.unique()).unique()
+    else:
+        check_data_matches_labels(rightLabels, dataFrame["right"], "right")
+    return leftLabels, rightLabels
+
+
+def init_values(
+    ax,
+    closePlot,
+    figSize,
+    figureName,
+    left,
+    leftLabels,
+    leftWeight,
+    rightLabels,
+    rightWeight,
+):
+    deprecation_warnings(closePlot, figSize, figureName)
+    if ax is None:
+        ax = plt.gca()
+    if leftWeight is None:
+        leftWeight = []
+    if rightWeight is None:
+        rightWeight = []
+    if leftLabels is None:
+        leftLabels = []
+    if rightLabels is None:
+        rightLabels = []
+    # Check weights
+    if len(leftWeight) == 0:
+        leftWeight = np.ones(len(left))
+    if len(rightWeight) == 0:
+        rightWeight = leftWeight
+    return ax, leftLabels, leftWeight, rightLabels, rightWeight
+
+
+def deprecation_warnings(closePlot, figSize, figureName):
     warn = []
     if figureName is not None:
         msg = "use of figureName in sankey() is deprecated"
@@ -116,87 +222,14 @@ def sankey(
         msg = "use of figSize in sankey() is deprecated"
         warnings.warn(msg, DeprecationWarning)
         warn.append(msg[7:-14])
-
     if warn:
         LOGGER.warning(
             " The following arguments are deprecated and should be removed: %s",
             ", ".join(warn),
         )
 
-    if ax is None:
-        ax = plt.gca()
 
-    if leftWeight is None:
-        leftWeight = []
-    if rightWeight is None:
-        rightWeight = []
-    if leftLabels is None:
-        leftLabels = []
-    if rightLabels is None:
-        rightLabels = []
-    # Check weights
-    if len(leftWeight) == 0:
-        leftWeight = np.ones(len(left))
-
-    if len(rightWeight) == 0:
-        rightWeight = leftWeight
-
-    plt.rc("text", usetex=False)
-    plt.rc("font", family="serif")
-
-    # Create Dataframe
-    if isinstance(left, pd.Series):
-        left = left.reset_index(drop=True)
-    if isinstance(right, pd.Series):
-        right = right.reset_index(drop=True)
-    dataFrame = pd.DataFrame(
-        {
-            "left": left,
-            "right": right,
-            "leftWeight": leftWeight,
-            "rightWeight": rightWeight,
-        },
-        index=range(len(left)),
-    )
-
-    if len(dataFrame[(dataFrame.left.isnull()) | (dataFrame.right.isnull())]):
-        raise NullsInFrame("Sankey graph does not support null values.")
-
-    # Identify all labels that appear 'left' or 'right'
-    allLabels = pd.Series(
-        np.r_[dataFrame.left.unique(), dataFrame.right.unique()]
-    ).unique()
-    LOGGER.debug("Labels to handle : %s", allLabels)
-
-    # Identify left labels
-    if len(leftLabels) == 0:
-        leftLabels = pd.Series(dataFrame.left.unique()).unique()
-    else:
-        check_data_matches_labels(leftLabels, dataFrame["left"], "left")
-
-    # Identify right labels
-    if len(rightLabels) == 0:
-        rightLabels = pd.Series(dataFrame.right.unique()).unique()
-    else:
-        check_data_matches_labels(rightLabels, dataFrame["right"], "right")
-
-    # If no colorDict given, make one
-    if colorDict is None:
-        colorDict = {}
-        palette = "hls"
-        colorPalette = sns.color_palette(palette, len(allLabels))
-        for i, label in enumerate(allLabels):
-            colorDict[label] = colorPalette[i]
-    else:
-        missing = [label for label in allLabels if label not in colorDict.keys()]
-        if missing:
-            msg = (
-                "The colorDict parameter is missing values for the following labels : "
-            )
-            msg += "{}".format(", ".join(missing))
-            raise ValueError(msg)
-    LOGGER.debug("The colordict value are : %s", colorDict)
-
+def determine_widths(dataFrame, leftLabels, rightLabels):
     # Determine widths of individual strips
     ns_l = defaultdict()
     ns_r = defaultdict()
@@ -212,18 +245,12 @@ def sankey(
             ].rightWeight.sum()
         ns_l[leftLabel] = leftDict
         ns_r[leftLabel] = rightDict
+    return ns_l, ns_r
 
-    # Determine positions of left label patches and total widths
-    leftWidths, topEdge = _get_positions_and_total_widths(dataFrame, leftLabels, "left")
 
-    # Determine positions of right label patches and total widths
-    rightWidths, topEdge = _get_positions_and_total_widths(
-        dataFrame, rightLabels, "right"
-    )
-
-    # Total vertical extent of diagram
-    xMax = topEdge / aspect
-
+def draw_vertical_bars(
+    ax, colorDict, fontsize, leftLabels, leftWidths, rightLabels, rightWidths, xMax
+):
     # Draw vertical bars on left and right of each  label's section & print label
     for leftLabel in leftLabels:
         ax.fill_between(
@@ -256,6 +283,60 @@ def sankey(
             fontsize=fontsize,
         )
 
+
+def create_colors(allLabels, colorDict):
+    # If no colorDict given, make one
+    if colorDict is None:
+        colorDict = {}
+        palette = "hls"
+        colorPalette = sns.color_palette(palette, len(allLabels))
+        for i, label in enumerate(allLabels):
+            colorDict[label] = colorPalette[i]
+    else:
+        missing = [label for label in allLabels if label not in colorDict.keys()]
+        if missing:
+            msg = (
+                "The colorDict parameter is missing values for the following labels : "
+            )
+            msg += "{}".format(", ".join(missing))
+            raise ValueError(msg)
+    LOGGER.debug("The colordict value are : %s", colorDict)
+    return colorDict
+
+
+def create_datadrame(left, leftWeight, right, rightWeight):
+    # Create Dataframe
+    if isinstance(left, pd.Series):
+        left = left.reset_index(drop=True)
+    if isinstance(right, pd.Series):
+        right = right.reset_index(drop=True)
+    dataFrame = pd.DataFrame(
+        {
+            "left": left,
+            "right": right,
+            "leftWeight": leftWeight,
+            "rightWeight": rightWeight,
+        },
+        index=range(len(left)),
+    )
+    if len(dataFrame[(dataFrame.left.isnull()) | (dataFrame.right.isnull())]):
+        raise NullsInFrame("Sankey graph does not support null values.")
+    return dataFrame
+
+
+def plot_strips(
+    ax,
+    colorDict,
+    dataFrame,
+    leftLabels,
+    leftWidths,
+    ns_l,
+    ns_r,
+    rightColor,
+    rightLabels,
+    rightWidths,
+    xMax,
+):
     # Plot strips
     for leftLabel in leftLabels:
         for rightLabel in rightLabels:
@@ -286,7 +367,8 @@ def sankey(
                 ys_u = np.convolve(ys_u, 0.05 * np.ones(20), mode="valid")
                 ys_u = np.convolve(ys_u, 0.05 * np.ones(20), mode="valid")
 
-                # Update bottom edges at each label so next strip starts at the right place
+                # Update bottom edges at each label so next strip starts at the
+                # right place
                 leftWidths[leftLabel]["bottom"] += ns_l[leftLabel][rightLabel]
                 rightWidths[rightLabel]["bottom"] += ns_r[leftLabel][rightLabel]
                 ax.fill_between(
@@ -297,18 +379,6 @@ def sankey(
                     color=colorDict[labelColor],
                 )
     ax.axis("off")
-
-    if figSize is not None:
-        plt.gcf().set_size_inches(figSize)
-
-    if figureName is not None:
-        fileName = "{}.png".format(figureName)
-        plt.savefig(fileName, bbox_inches="tight", dpi=150)
-        LOGGER.info("Sankey diagram generated in '%s'", fileName)
-    if closePlot:
-        plt.close()
-
-    return ax
 
 
 def _get_positions_and_total_widths(df, labels, side):
