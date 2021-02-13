@@ -16,7 +16,12 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/pierre-sassoulas/pySankey",
     packages=setuptools.find_packages(),
-    install_requires=["matplotlib>=2.1.0rc1", "seaborn>=0.8.1", "numpy>=1.13.3"],
+    install_requires=[
+        "matplotlib>=2.1.0rc1",
+        "seaborn>=0.8.1",
+        "numpy>=1.13.3",
+        "pandas",
+    ],
     test_requires=TEST_REQUIRES,
     extras_require={"test": TEST_REQUIRES},
     classifiers=(
