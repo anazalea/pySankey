@@ -104,6 +104,10 @@ def sankey(left, right, leftWeight=None, rightWeight=None, colorDict=None,
         left = left.reset_index(drop=True)
     if isinstance(right, pd.Series):
         right = right.reset_index(drop=True)
+    if isinstance(leftWeight, pd.Series):
+        leftWeight = leftWeight.reset_index(drop=True)
+    if isinstance(rightWeight, pd.Series):
+        rightWeight = rightWeight.reset_index(drop=True)
     dataFrame = pd.DataFrame({'left': left, 'right': right, 'leftWeight': leftWeight,
                               'rightWeight': rightWeight}, index=range(len(left)))
 
@@ -123,7 +127,7 @@ def sankey(left, right, leftWeight=None, rightWeight=None, colorDict=None,
     if len(rightLabels) == 0:
         rightLabels = pd.Series(dataFrame.right.unique()).unique()
     else:
-        check_data_matches_labels(leftLabels, dataFrame['right'], 'right')
+        check_data_matches_labels(rightLabels, dataFrame['right'], 'right')
     # If no colorDict given, make one
     if colorDict is None:
         colorDict = {}
