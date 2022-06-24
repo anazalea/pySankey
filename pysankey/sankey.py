@@ -310,6 +310,10 @@ def create_datadrame(left, leftWeight, right, rightWeight):
         left = left.reset_index(drop=True)
     if isinstance(right, pd.Series):
         right = right.reset_index(drop=True)
+    if isinstance(leftWeight, pd.Series):
+        leftWeight = leftWeight.reset_index(drop=True)
+    if isinstance(rightWeight, pd.Series):
+        rightWeight = rightWeight.reset_index(drop=True)
     dataFrame = pd.DataFrame(
         {
             "left": left,

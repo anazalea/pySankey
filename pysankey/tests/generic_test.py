@@ -54,5 +54,6 @@ class TestCustomerGood(GenericTest):
         self.data = pd.read_csv(
             "pysankey/customers-goods.csv",
             sep=",",
+            header=0,
             names=["id", "customer", "good", "revenue"],
         )
