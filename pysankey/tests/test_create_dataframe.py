@@ -20,7 +20,8 @@ class TestCreateDataframeCustomerGood(TestCustomerGood):
 
     def test_sorted_dataframe(self):
         """
-        Tests that if we pass a sorted dataframe, it doesn't change the values due to an index mismatch
+        Tests that if we pass a sorted dataframe, it doesn't change the values due to an index
+        mismatch
         """
         # Pass the data as is
         dataframe = create_datadrame(
