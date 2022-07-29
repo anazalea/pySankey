@@ -3,7 +3,7 @@ import setuptools
 with open("README.md", "r", encoding="UTF-8") as fh:
     long_description = fh.read()
 
-TEST_REQUIRES = ["pylint", "coverage", "coveralls", "pre-commit", "pytest"]
+TEST_REQUIRES = ["pylint", "coverage", "coveralls", "pre-commit", "pytest-cov"]
 
 setuptools.setup(
     name="pySankeyBeta",
