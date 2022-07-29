@@ -140,6 +140,7 @@ plt.savefig('customers-goods.png', bbox_inches='tight') # to save
 ![Customer goods](pysankey/customers-goods.png)
 
 Similar to seaborn, you can pass a matplotlib `Axes` to `sankey` function:
+
 ```python
 import pandas as pd
 from pysankey import sankey
@@ -169,20 +170,27 @@ plt.show()
 
 ## Important informations
 
-Use of `figureName`, `closePlot`, `figSize` in `sankey()` is deprecated and will be remove in a future version.
-This is done so matplotlib is used more transparently as this [issue](https://github.com/anazalea/pySankey/issues/26#issue-429312025) on the original github repo suggested.
+Use of `figureName`, `closePlot`, `figSize` in `sankey()` is deprecated and will be
+remove in a future version. This is done so matplotlib is used more transparently as
+this [issue](https://github.com/anazalea/pySankey/issues/26#issue-429312025) on the
+original github repo suggested.
 
-Now, `sankey` does less of the customization and let the user do it to their liking by returning a matplotlib `Axes` object, which mean the user also has access to the `Figure` to customise.
-Then they can choose what to do with it - showing it, saving it with much more flexibility.
+Now, `sankey` does less of the customization and let the user do it to their liking by
+returning a matplotlib `Axes` object, which mean the user also has access to the
+`Figure` to customise. Then they can choose what to do with it - showing it, saving it
+with much more flexibility.
 
 ### Recommended changes to your code
- - To save a figure, one can simply do:
-  ```python
-    plt.savefig("<figureName>.png", bbox_inches="tight", dpi=150)
-  ```
 
- - The `closePlot` is not needed anymore because without `plt.show()` after `sankey()`, no plot is displayed.
-  You can still do `plt.close()` to be sure to not display this plot if you display other plots afterwards.
+- To save a figure, one can simply do:
+
+```python
+  plt.savefig("<figureName>.png", bbox_inches="tight", dpi=150)
+```
+
+- The `closePlot` is not needed anymore because without `plt.show()` after `sankey()`,
+  no plot is displayed. You can still do `plt.close()` to be sure to not display this
+  plot if you display other plots afterwards.
 
 - You can modify the sankey size by changing the one from the matplotlib figure.
   ```python
@@ -195,14 +203,14 @@ Then they can choose what to do with it - showing it, saving it with much more f
 
 ### Lint
 
-	pylint pysankey
+    pylint pysankey
 
 ### Testing
 
-	python -m unittest
+    python -m unittest
 
 ### Coverage
 
-	coverage run -m unittest
-	coverage html
-	# Open htmlcov/index.html in a navigator
+    coverage run -m unittest
+    coverage html
+    # Open htmlcov/index.html in a navigator

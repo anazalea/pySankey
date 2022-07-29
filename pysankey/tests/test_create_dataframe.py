@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import pandas as pd
 
 from pysankey.sankey import create_datadrame
@@ -7,7 +6,7 @@ from pysankey.tests.generic_test import TestCustomerGood
 
 class TestCreateDataframeCustomerGood(TestCustomerGood):
 
-    """ Tests the create_dataframe function on the data in customers-goods.csv"""
+    """Tests the create_dataframe function on the data in customers-goods.csv"""
 
     def test_dataframe_correct_type(self):
         dataframe = create_datadrame(
@@ -20,8 +19,8 @@ class TestCreateDataframeCustomerGood(TestCustomerGood):
 
     def test_sorted_dataframe(self):
         """
-        Tests that if we pass a sorted dataframe, it doesn't change the values due to an index
-        mismatch
+        Tests that if we pass a sorted dataframe, it doesn't change the values due to
+        an index mismatch.
         """
         # Pass the data as is
         dataframe = create_datadrame(
@@ -40,5 +39,8 @@ class TestCreateDataframeCustomerGood(TestCustomerGood):
             rightWeight=data_sorted["revenue"],
         )
 
-        # Check that the values are still the same if we sort both dataframes the same way
-        assert (dataframe.sort_values(by="leftWeight").values == dataframe_sorted.values).all()
+        # Check that the values are still the same if we sort both dataframes
+        # the same way
+        assert (
+            dataframe.sort_values(by="leftWeight").values == dataframe_sorted.values
+        ).all()

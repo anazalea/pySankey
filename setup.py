@@ -1,6 +1,6 @@
 import setuptools
 
-with open("README.md", "r", encoding="UTF-8") as fh:
+with open("README.md", encoding="UTF-8") as fh:
     long_description = fh.read()
 
 TEST_REQUIRES = ["pylint", "coverage", "coveralls", "pre-commit", "pytest-cov"]

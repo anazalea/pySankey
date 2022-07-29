@@ -1,15 +1,13 @@
-# -*- coding: utf-8 -*-
-
 from pysankey import sankey
 from pysankey.tests.generic_test import TestFruit
 
 
 class TestErrorCase(TestFruit):
 
-    """ Test sankey's deprecation warnings. """
+    """Test sankey's deprecation warnings."""
 
     def test_deprecated_parameters(self):
-        """ Test if deprecation warnings are correctly triggered """
+        """Test if deprecation warnings are correctly triggered"""
         with self.assertWarns(DeprecationWarning):
             sankey(
                 self.data["true"],

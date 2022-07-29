@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import os
 import unittest
 
@@ -20,7 +18,7 @@ class GenericTest(unittest.TestCase):
         cls.colorDict = ""
 
     def tearDown(self):
-        path = "{}.png".format(self.figure_name)
+        path = f"{self.figure_name}.png"
         # Comment this to check the resulting image
         if os.path.exists(path):
             os.remove(path)
@@ -28,7 +26,7 @@ class GenericTest(unittest.TestCase):
 
 class TestFruit(GenericTest):
 
-    """ Base test to test with the data in fruit.txt """
+    """Base test to test with the data in fruit.txt"""
 
     def setUp(self):
         self.figure_name = "fruit"
@@ -47,7 +45,7 @@ class TestFruit(GenericTest):
 
 class TestCustomerGood(GenericTest):
 
-    """ Base test to test with the data in customers-goods.csv """
+    """Base test to test with the data in customers-goods.csv"""
 
     def setUp(self):
         self.figure_name = "customer-good"

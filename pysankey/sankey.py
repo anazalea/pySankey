@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 r"""
 Produces simple Sankey Diagrams with matplotlib.
 @author: Anneya Golob & marcomanz & pierre-sassoulas & jorwoods & vgalisson
@@ -29,7 +28,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 class PySankeyException(Exception):
-    """ Generic PySankey Exception. """
+    """Generic PySankey Exception."""
 
 
 class NullsInFrame(PySankeyException):
@@ -57,9 +56,7 @@ def check_data_matches_labels(labels, data, side):
                 msg = "Labels: " + ",".join(labels) + "\n"
             if len(data) < 20:
                 msg += "Data: " + ",".join(data)
-            raise LabelMismatch(
-                "{0} labels and data do not match.{1}".format(side, msg)
-            )
+            raise LabelMismatch(f"{side} labels and data do not match.{msg}")
 
 
 def sankey(
@@ -159,7 +156,7 @@ def sankey(
 
 def save_image(figureName):
     if figureName is not None:
-        fileName = "{}.png".format(figureName)
+        fileName = f"{figureName}.png"
         plt.savefig(fileName, bbox_inches="tight", dpi=150)
         LOGGER.info("Sankey diagram generated in '%s'", fileName)
 
@@ -386,7 +383,7 @@ def plot_strips(
 
 
 def _get_positions_and_total_widths(df, labels, side):
-    """ Determine positions of label patches and total widths"""
+    """Determine positions of label patches and total widths"""
     widths = defaultdict()
     for i, label in enumerate(labels):
         labelWidths = {}
