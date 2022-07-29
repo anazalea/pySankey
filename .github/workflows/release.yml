@@ -1,0 +1,38 @@
+name: Release
+
+on:
+  release:
+    types:
+      - published
+
+env:
+  DEFAULT_PYTHON: 3.9
+
+jobs:
+  release-pypi:
+    name: Upload release to PyPI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code from Github
+        uses: actions/checkout@v3.0.2
+      - name: Set up Python ${{ env.DEFAULT_PYTHON }}
+        id: python
+        uses: actions/setup-python@v4.0.0
+        with:
+          python-version: ${{ env.DEFAULT_PYTHON }}
+      - name: Install requirements
+        run: |
+          # Remove dist, build, and .egg-info
+          # when building locally for testing!
+          python -m pip install twine build
+      - name: Build distributions
+        run: |
+          python -m build
+      - name: Upload to PyPI
+        if: github.event_name == 'release' && startsWith(github.ref, 'refs/tags')
+        env:
+          TWINE_REPOSITORY: pypi
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: |
+          twine upload --verbose dist/*

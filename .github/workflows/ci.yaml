@@ -1,0 +1,101 @@
+on:
+  push:
+    branches:
+      - main
+  pull_request: ~
+
+env:
+  CACHE_VERSION: 4
+  DEFAULT_PYTHON: 3.9
+  PRE_COMMIT_CACHE: ~/.cache/pre-commit
+
+jobs:
+  pylint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+      - name: Install dependencies
+        run: |
+          pip install -e ".[test]"
+      - name: Lint
+        run: |
+          # We need to run pylint as it can't be run with pre-commit-ci
+          pre-commit run pylint --all-files
+
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+      - name: Install dependencies
+        run: |
+          pip install -e ".[test]"
+      - name: Coverage
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          coverage run -m pytest . --cov=pysankey --cov-report html
+          coveralls debug --service=github
+
+  linux-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.7, 3.8, 3.9, "3.10"]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          pip install -e ".[test]"
+      - name: Test
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          pytest .
+
+  windows-tests:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        python-version: [3.7, 3.8, 3.9, "3.10"]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          pip install -e ".[test]"
+      - name: Test
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          pytest .
+
+  mac-tests:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        python-version: [3.7, 3.8, 3.9, "3.10"]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          pip install -e ".[test]"
+      - name: Test
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          pytest .
