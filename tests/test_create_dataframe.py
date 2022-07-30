@@ -1,7 +1,7 @@
 import pandas as pd
 
 from pysankey.sankey import create_datadrame
-from pysankey.tests.generic_test import TestCustomerGood
+from tests.generic_test import TestCustomerGood
 
 
 class TestCreateDataframeCustomerGood(TestCustomerGood):

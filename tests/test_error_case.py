@@ -1,5 +1,5 @@
 from pysankey import LabelMismatch, NullsInFrame, sankey
-from pysankey.tests.generic_test import TestFruit
+from tests.generic_test import TestFruit
 
 
 class TestErrorCase(TestFruit):

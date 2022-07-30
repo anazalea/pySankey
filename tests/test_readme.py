@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 
 from pysankey import sankey
-from pysankey.tests.generic_test import TestCustomerGood, TestFruit
+from tests.generic_test import TestCustomerGood, TestFruit
 
 
 class TestReadmeFruit(TestFruit):
