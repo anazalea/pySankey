@@ -39,7 +39,7 @@ class LabelMismatch(PySankeyException):
 
 
 def check_data_matches_labels(labels, data, side):
-    if len(labels > 0):
+    if len(labels) > 0:
         if isinstance(data, list):
             data = set(data)
         if isinstance(data, pd.Series):
@@ -57,7 +57,7 @@ def check_data_matches_labels(labels, data, side):
 
 def sankey(left, right, leftWeight=None, rightWeight=None, colorDict=None,
            leftLabels=None, rightLabels=None, aspect=4, rightColor=False,
-           fontsize=14, figureName=None, closePlot=False):
+           fontsize=14, fontfamily='serif', figure_name=None, closePlot=False):
     '''
     Make Sankey Diagram showing flow from left-->right
 
@@ -77,6 +77,8 @@ def sankey(left, right, leftWeight=None, rightWeight=None, colorDict=None,
         aspect = vertical extent of the diagram in units of horizontal extent
         rightColor = If true, each strip in the diagram will be be colored
                     according to its left label
+        fontsize = size of the label names
+        fontfamily = style of the font of the label names
     Ouput:
         None
     '''
@@ -97,7 +99,7 @@ def sankey(left, right, leftWeight=None, rightWeight=None, colorDict=None,
 
     plt.figure()
     plt.rc('text', usetex=False)
-    plt.rc('font', family='serif')
+    plt.rc('font', family=fontfamily)
 
     # Create Dataframe
     if isinstance(left, pd.Series):
